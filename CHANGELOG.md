@@ -6,6 +6,12 @@ All notable changes to EleSync are documented here. The format follows
 
 ## [Unreleased]
 
+## [1.24.79] - 2026-10-27
+
+### Release
+
+- Publish the first downloadable Windows release from the new public repository.
+
 ## [1.24.78] - 2026-10-27
 
 ### Security

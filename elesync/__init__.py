@@ -18,7 +18,7 @@ __all__ = [
     "normalize",
     "default_vault_dir",
 ]
-__version__ = "1.24.78"
+__version__ = "1.24.79"
 
 DEFAULT_VAULT = "~/EleSyncVault"
 

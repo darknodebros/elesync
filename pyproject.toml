@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "elesync"
-version = "1.24.78"
+version = "1.24.79"
 description = "Local-first AI project workspace — a private vault where approved assistants share context, knowledge, and tasks."
 readme = "README.md"
 license = { text = "Proprietary" }

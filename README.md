@@ -257,7 +257,7 @@ Common fixes:
 
 ## Project status
 
-EleSync is at **1.24.78** (1167 tests, ~12,500 LOC). The current product focus is stabilization:
+EleSync is at **1.24.79** (1167 tests, ~12,500 LOC). The current product focus is stabilization:
 bug fixing, UX polish, documentation, first-run completion, privacy clarity, and reliability.
 
 ## License
