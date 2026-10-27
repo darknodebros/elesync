@@ -1,0 +1,12 @@
+{
+  "uuid": "00000000-0000-0000-0000-000000000002",
+  "name": "Empty Project",
+  "description": "",
+  "is_private": true,
+  "is_starter_project": false,
+  "prompt_template": "",
+  "created_at": "2026-01-01T00:00:00Z",
+  "updated_at": "2026-01-01T00:00:00Z",
+  "creator": {"uuid": "00000000-0000-0000-0000-000000000099", "full_name": "Test User"},
+  "docs": []
+}

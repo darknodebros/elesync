@@ -1,0 +1,38 @@
+{
+  "listItems": [
+    {
+      "header": "Gemini Apps Activity",
+      "payload": {
+        "conversationId": "conv-investor-001",
+        "title": "Investor Outreach Plan",
+        "messages": [
+          {
+            "role": "user",
+            "content": "Help me draft an investor outreach plan for our seed round."
+          },
+          {
+            "role": "model",
+            "content": "Here is a structured investor outreach plan: start with warm introductions, prepare a concise deck, and follow up within 48 hours of every meeting."
+          }
+        ]
+      }
+    },
+    {
+      "header": "Gemini Apps Activity",
+      "payload": {
+        "conversationId": "conv-python-002",
+        "title": "Python Debug Session",
+        "messages": [
+          {
+            "role": "user",
+            "content": "Why is my Python script throwing a KeyError on this dict lookup?"
+          },
+          {
+            "role": "model",
+            "content": "A KeyError means the key does not exist in the dict. Use .get() with a default value, or check membership with 'in' before accessing it directly."
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,8 @@
+{
+  "memories": [
+    "User's name is Alex.",
+    "User is a software developer.",
+    {"content": "Prefers direct, no-fluff answers with clear next steps.", "type": "preference"},
+    "User's name is Alex."
+  ]
+}

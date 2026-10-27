@@ -1,0 +1,20 @@
+{
+  "listItems": [
+    {
+      "header": "Fit Activity",
+      "payload": {
+        "activityType": "steps",
+        "value": 8342,
+        "date": "2026-06-15"
+      }
+    },
+    {
+      "header": "Fit Activity",
+      "payload": {
+        "activityType": "distance_km",
+        "value": 6.1,
+        "date": "2026-06-15"
+      }
+    }
+  ]
+}

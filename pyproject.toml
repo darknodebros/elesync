@@ -1,0 +1,94 @@
+[build-system]
+requires = ["setuptools==84.2.1"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "elesync"
+version = "1.24.78"
+description = "Local-first AI project workspace — a private vault where approved assistants share context, knowledge, and tasks."
+readme = "README.md"
+license = { text = "Proprietary" }
+requires-python = ">=3.11"
+keywords = ["mcp", "ai-memory", "local-first", "claude", "chatgpt", "gemini",
+            "grok", "deepseek", "memory", "elesync"]
+authors = [{ name = "Alphanymous" }]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Developers",
+    "Intended Audience :: End Users/Desktop",
+    "License :: Other/Proprietary License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Topic :: Utilities",
+]
+dependencies = [
+    # mcp 2.0.0 renamed FastMCP -> MCPServer and moved imports. Pin to v1.x
+    # until we migrate; 1.28.0+ supports Python 3.14.
+    "mcp[cli]>=1.2.0,<2",
+    "pynacl>=1.5",
+    "bcrypt>=4.0",
+    "cryptography>=42.0",
+    "qrcode>=8.0",
+    # fastembed (semantic search) is NOT a hard dependency because it pulls in
+    # onnxruntime, which doesn't have wheels for every platform (e.g. older
+    # macOS, some ARM Linux). Install the semantic extra explicitly; running
+    # a search must not install executable dependencies at runtime.
+]
+
+[project.optional-dependencies]
+semantic = ["fastembed>=0.7.0,<0.9.0", "pillow>=13.0.0"]
+dev = ["pytest>=9.1.1", "httpx2>=2.8.0", "ruff==0.15.20", "mypy==2.1.0", "pre-commit==4.6.0"]
+
+[dependency-groups]
+ci = ["build", "twine", "wheel", "pip-audit==2.10.1", "pip==26.2.2", "setuptools"]
+release = ["pyinstaller", "pip-audit==2.10.1", "pip==26.2.2", "setuptools"]
+
+[project.scripts]
+ele = "elesync.cli:main"
+elesync = "elesync.mcp_server:main"
+
+[project.urls]
+Homepage = "https://github.com/darknodebros/EleSync"
+Repository = "https://github.com/darknodebros/EleSync"
+Issues = "https://github.com/darknodebros/EleSync/issues"
+
+[tool.setuptools]
+packages = ["elesync", "elesync.commands"]
+
+[tool.setuptools.package-data]
+elesync = ["static/*.css", "static/*.js", "static/*.png", "static/*.webp", "static/*.json", "static/*.svg", "static/*.woff2", "static/*.txt"]
+
+[tool.uv]
+# Fastembed's image extra pins vulnerable Pillow <13 even for text-only use.
+# Our semantic backend uses text embeddings; require the patched decoder.
+override-dependencies = ["pillow>=13.0.0"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "W", "F", "I", "UP", "B"]
+# E501 is handled by the formatter; B904 (raise-without-from) needs case-by-case judgement
+ignore = ["E501", "B904"]
+
+[tool.mypy]
+python_version = "3.13"
+ignore_missing_imports = true
+warn_unused_configs = true
+warn_return_any = false
+
+[tool.pytest.ini_options]
+# Tests are written with unittest, but pytest can run them too. This config
+# makes `pytest` work correctly for contributors who prefer it — the CI itself
+# uses `python -m unittest discover -s tests -v`.
+# "importlib" avoids collisions with any other package on sys.path that also
+# happens to have a top-level `tests` module/package (common on machines that
+# install Python packages globally rather than per-project in a venv, e.g. via
+# `pip install --user` or multiple editable installs sharing one interpreter).
+addopts = "--import-mode=importlib"

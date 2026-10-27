@@ -1,0 +1,137 @@
+/* Cosmic theme: deep space black, gold light, ivory text, jewel-coloured markers and frosted-glass panels.
+   It is the default: the pages ship <html data-theme="cosmic"> and dashboard-theme.js removes it for users
+   who picked the classic violet look. Everything keys off the same variables the app already uses, so most surfaces follow
+   automatically; the rules below add the glass, the serif headings and the starfield. */
+html[data-theme="cosmic"] {
+  --bg: #05060b; --surface: #0a0b13; --surface2: #11131f; --surface3: #191c2b; --surface-accent: #1c1709;
+  --border: #25262f; --border2: #43391f;
+  --accent: #f2b84b; --accent-strong: #c98a1e; --accent-soft: #ffe2a3; --accent-bg: rgb(var(--accent-rgb) / .12);
+  --accent2: #7ab8ff;
+  --text: #f4ecdc; --text2: #c3b9a5; --text3: #8f8777;
+  --success: #62d696; --warn: #ffc85a; --danger: #ff6b78;
+  --bg-rgb: 5 6 11; --surface-rgb: 10 11 19;
+  --accent-rgb: 242 184 75; --accent2-rgb: 122 184 255;
+  --success-rgb: 98 214 150; --warn-rgb: 255 200 90; --danger-rgb: 255 107 120;
+  --claude: #ff7a45; --manual: #ffd27a; --perplexity: #b08cff;
+  --glass: linear-gradient(150deg, rgba(255,244,214,.07), rgba(255,244,214,.015) 60%);
+  --glass-edge: rgba(255,226,163,.17);
+  --glass-shadow: inset 0 1px 0 rgba(255,244,214,.09), inset 0 0 30px rgba(242,184,75,.035), 0 12px 34px rgba(0,0,0,.5);
+  --serif: 'Iowan Old Style', 'Palatino Linotype', Palatino, 'Cormorant Garamond', Georgia, serif;
+}
+
+/* Starfield and a faint golden nebula behind everything (CSS only, no images). */
+html[data-theme="cosmic"] body {
+  background-color: var(--bg);
+  background-image:
+    radial-gradient(1px 1px at 23px 41px, rgba(255,255,255,.55), transparent),
+    radial-gradient(1px 1px at 97px 150px, rgba(255,244,214,.4), transparent),
+    radial-gradient(1.5px 1.5px at 171px 83px, rgba(255,214,140,.55), transparent),
+    radial-gradient(1px 1px at 139px 12px, rgba(170,200,255,.45), transparent),
+    radial-gradient(ellipse at 80% -10%, rgba(242,184,75,.10), transparent 42%),
+    radial-gradient(ellipse at 0% 85%, rgba(122,120,255,.07), transparent 38%);
+  background-size: 211px 197px, 263px 241px, 307px 293px, 181px 223px, auto, auto;
+}
+
+/* Frosted glass: cards, panels and dialogs. Blur is limited to these large surfaces to stay light on phones. */
+html[data-theme="cosmic"] .dashboard-card,
+html[data-theme="cosmic"] .card,
+html[data-theme="cosmic"] .cc-command-grid .dashboard-card,
+html[data-theme="cosmic"] .workspace-stat-card,
+html[data-theme="cosmic"] .cc-search,
+html[data-theme="cosmic"] .project-card,
+html[data-theme="cosmic"] #graph-inspector,
+html[data-theme="cosmic"] #graph-controls-panel {
+  background: var(--glass), rgba(8,9,16,.62);
+  border-color: var(--glass-edge);
+  box-shadow: var(--glass-shadow);
+}
+html[data-theme="cosmic"] .dashboard-card,
+html[data-theme="cosmic"] .cc-command-grid .dashboard-card,
+html[data-theme="cosmic"] #graph-controls-panel,
+html[data-theme="cosmic"] .sidebar,
+html[data-theme="cosmic"] .topbar {
+  -webkit-backdrop-filter: blur(10px) saturate(1.15);
+  backdrop-filter: blur(10px) saturate(1.15);
+}
+html[data-theme="cosmic"] .sidebar { background: rgba(7,8,14,.72); border-right-color: var(--glass-edge); }
+html[data-theme="cosmic"] .topbar { background: rgba(7,8,14,.6); border-bottom-color: var(--glass-edge); }
+
+/* Headings: wide-spaced serif capitals, like the reference slides. Body text stays in Geist. */
+html[data-theme="cosmic"] .cc-header h1,
+html[data-theme="cosmic"] .page-intro h2,
+html[data-theme="cosmic"] .topbar-title,
+html[data-theme="cosmic"] .pairing-header h1 {
+  font-family: var(--serif); font-weight: 500; letter-spacing: .14em; text-transform: uppercase; color: var(--text);
+}
+html[data-theme="cosmic"] .cc-header h1 { font-size: 24px; }
+html[data-theme="cosmic"] .topbar-title { font-size: 14px; }
+html[data-theme="cosmic"] .dashboard-label,
+html[data-theme="cosmic"] .cc-overview .dashboard-label { letter-spacing: .22em; text-transform: uppercase; color: var(--accent); }
+
+/* Navigation: each destination gets its own jewel marker, and the active one glows gold. */
+html[data-theme="cosmic"] .nav-item.active {
+  background: rgb(var(--accent-rgb) / .1); color: var(--accent-soft);
+  box-shadow: inset 0 0 0 1px rgb(var(--accent-rgb) / .3), 0 0 18px rgb(var(--accent-rgb) / .1);
+}
+html[data-theme="cosmic"] .nav-item .icon { filter: drop-shadow(0 0 5px currentColor); }
+html[data-theme="cosmic"] #nav-overview .icon { color: #f2b84b; }
+html[data-theme="cosmic"] #nav-projects .icon { color: #ff77b0; }
+html[data-theme="cosmic"] #nav-browse .icon { color: #7ab8ff; }
+html[data-theme="cosmic"] #nav-graph .icon { color: #5fe3ae; }
+html[data-theme="cosmic"] #nav-add .icon { color: #ffc85a; }
+html[data-theme="cosmic"] #nav-import .icon { color: #ff7d6b; }
+html[data-theme="cosmic"] #nav-connect .icon { color: #b794ff; }
+html[data-theme="cosmic"] #nav-remote .icon { color: #66e0ff; }
+html[data-theme="cosmic"] #nav-usb .icon { color: #9fb2c8; }
+
+/* Buttons: primary is warm gold with dark text; the rest take the glass edge. */
+html[data-theme="cosmic"] .btn-primary {
+  background: linear-gradient(135deg, #ffd885 0%, #d99a2b 100%); color: #1b1307; border-color: transparent;
+  box-shadow: 0 0 20px rgb(var(--accent-rgb) / .32);
+}
+html[data-theme="cosmic"] .btn { border-color: var(--glass-edge); }
+
+/* The knowledge graph sits on the same black, with a golden haze. */
+html[data-theme="cosmic"] .graph-stage,
+html[data-theme="cosmic"] .cc-command-grid .cc-hero-graph { background: #05060b; border-color: var(--glass-edge); box-shadow: var(--glass-shadow); }
+html[data-theme="cosmic"] .graph-legend,
+html[data-theme="cosmic"] .graph-controls-toggle { background: rgba(8,9,16,.74); border-color: var(--glass-edge); }
+html[data-theme="cosmic"] .dot-project { background: #f2b84b; box-shadow: 0 0 8px #f2b84b; }
+
+/* The elephant is violet and blue, and a hue shift turns it red and green, so Cosmic uses a gold copy
+   (scripts/build_cosmic_icons.py). `content` shows it before dashboard-theme.js swaps the src, so the violet
+   one never flashes. The Home page has a more specific glow rule of its own, hence the override. */
+html[data-theme="cosmic"] .sidebar-brand-lockup {
+  content: url('/static/elesync-main-logo-cosmic.webp');
+  filter: drop-shadow(0 0 14px rgb(var(--accent-rgb) / .45)) !important;
+}
+
+/* Dialogs, the command menu and toasts: the same glass as the cards, over a deeper, blurred backdrop. */
+html[data-theme="cosmic"] .dialog-overlay { background: rgba(2,3,8,.66); }
+html[data-theme="cosmic"] .dialog-overlay.open { -webkit-backdrop-filter: blur(4px); backdrop-filter: blur(4px); }
+html[data-theme="cosmic"] .dialog,
+html[data-theme="cosmic"] .cmdk {
+  background: var(--glass), rgba(9,10,18,.9);
+  border-color: var(--glass-edge);
+  box-shadow: var(--glass-shadow), 0 0 40px rgb(var(--accent-rgb) / .06);
+}
+html[data-theme="cosmic"] .dialog h3 { font-family: var(--serif); font-weight: 500; letter-spacing: .1em; text-transform: uppercase; }
+html[data-theme="cosmic"] .cmdk-bar { border-bottom-color: var(--glass-edge); }
+html[data-theme="cosmic"] .toast.relay-toast,
+html[data-theme="cosmic"] .toast.conflict-card { background: var(--glass), rgba(9,10,18,.96); }
+
+/* Theme switch in the sidebar footer. */
+.sidebar-footer .theme-switch {
+  display: inline-block; margin: 4px 0 0 4px; padding: 2px 6px; border: 1px solid var(--border); border-radius: var(--radius-sm);
+  background: none; color: var(--text2); font: inherit; font-size: 12px; cursor: pointer;
+}
+.sidebar-footer .theme-switch:hover { border-color: var(--accent); color: var(--accent); }
+@media (max-width: 700px) { .sidebar-footer .theme-switch { min-height: 44px; min-width: 44px; } }
+
+@media (prefers-reduced-transparency: reduce) {
+  html[data-theme="cosmic"] .dashboard-card, html[data-theme="cosmic"] .cc-command-grid .dashboard-card,
+  html[data-theme="cosmic"] #graph-controls-panel, html[data-theme="cosmic"] .sidebar, html[data-theme="cosmic"] .topbar,
+  html[data-theme="cosmic"] .dialog-overlay.open {
+    -webkit-backdrop-filter: none; backdrop-filter: none;
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "uuid": "00000000-0000-0000-0000-000000000001",
+  "name": "Sample Project",
+  "description": "",
+  "is_private": true,
+  "is_starter_project": false,
+  "prompt_template": "",
+  "created_at": "2026-01-01T00:00:00Z",
+  "updated_at": "2026-01-01T00:00:00Z",
+  "creator": {"uuid": "00000000-0000-0000-0000-000000000099", "full_name": "Test User"},
+  "docs": [
+    {
+      "uuid": "00000000-0000-0000-0000-000000000010",
+      "filename": "notes.md",
+      "content": "Project goal: ship the thing by Friday.",
+      "created_at": "2026-01-01T00:00:00Z"
+    },
+    {
+      "uuid": "00000000-0000-0000-0000-000000000011",
+      "filename": "architecture.md",
+      "content": "Backend uses SQLite; frontend is a single static HTML file.",
+      "created_at": "2026-01-01T00:00:00Z"
+    }
+  ]
+}

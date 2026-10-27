@@ -1,0 +1,8 @@
+# Enforce LF line endings in the repo AND in every working tree.
+# Without this, core.autocrlf on Windows rewrites the checkout to CRLF, which
+# makes LF patches fail to apply -- the recurring "patch does not apply" friction.
+* text=auto eol=lf
+
+# Binaries must never be line-ending- or diff-processed.
+*.png binary
+*.gif binary

@@ -1,0 +1,22 @@
+# Keep this ruff-pre-commit rev in lockstep with the `ruff==` pin in
+# pyproject.toml's [dev] extra, and with the version CI installs via
+# `pip install -e ".[dev]"`. All three (pre-commit, local `pip install`,
+# CI) must resolve to the same ruff release, or formatting can disagree
+# and `ruff format --check` in CI will fail on files that looked clean
+# locally. If you bump one, bump all three in the same commit.
+repos:
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.15.20
+    hooks:
+      - id: ruff
+        args: [--fix]
+      - id: ruff-format
+
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v6.0.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-yaml
+      - id: check-toml
+      - id: check-merge-conflict

@@ -1,0 +1,134 @@
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+*.egg-info/
+build/
+dist/
+.pytest_cache/
+.DS_Store
+# Never commit a personal vault
+EleSyncVault/
+*.db
+# Claude Code local state. The root default-deny below un-ignores /.claude/ so
+# shared project config can be tracked, which also made everything else the tool
+# writes there trackable -- including .credentials.json. Default to ignoring the
+# directory's contents and opt individual files back in, so a stray `git add -A`
+# cannot leak a token to a public remote.
+.claude/*
+!.claude/settings.json
+!.claude/agents/
+!.claude/skills/
+
+# Personal release/automation artifacts (generated locally, not for the repo)
+RUN-RELEASE.*
+Release-v*-FULL-AUTOMATION*.ps1
+fix_ci_lint.py
+fix_web_js.py
+prep_v*.py
+sync_docs_*.py
+
+# Generated documentation guides (kept local, separate from canonical README/SETUP)
+00-READ-ME-FIRST.txt
+_AUTOMATION_PACKAGE_README.txt
+_START_HERE.txt
+QUICK-START-NOW.txt
+RUN-AUTOMATION-NOW.txt
+EXECUTE-*.md
+
+# GitHub Copilot coding-agent worktrees land inside the repo folder rather than
+# beside it -- ignored so they can't dirty `git status`/block `git am`, and so
+# pytest doesn't collect their full nested copy of tests/ (which doubles the
+# suite and inflates the runtime). Remove with `git worktree remove <path>`
+# when a worktree is done, not a plain rm -- that keeps git's own worktree
+# bookkeeping (.git/worktrees/) from going stale.
+copilot-worktrees/
+
+# Loose patch files and diagnostic output from applying/debugging patches --
+# these are working artifacts, never repo content.
+*.patch
+*.patch.txt
+pytest_output.log
+failures_dump.txt
+elesync_finish_line.py
+EleSync-v*-*.md
+RELEASE-NOTES-*.md
+AUTOMATION-SETUP-GUIDE.md
+ðŸš€-READY-TO-SHIP.txt
+
+# Backup files from local patches
+*.bak
+
+# One-off local automation/patch scripts (not part of the package)
+/add_*.py
+/fix_*.py
+/update_*.py
+/prep_*.py
+/sync_docs_*.py
+
+# One-off exploratory/probe scripts used while building adapters
+# (root-level only; real modules live under elesync/)
+/gemini.py
+/htmlshape.py
+/nodes.py
+/probe.py
+/shape.py
+/usbscan.py
+
+# Tool output junk
+ruff_*_output.txt
+poetry.lock
+
+# Secrets and logs — never commit
+*.env
+*.key
+*.pem
+*.crt
+*.log
+.coverage
+htmlcov/
+
+# ---------------------------------------------------------------------------
+# Root-level default-deny.
+#
+# Everything above this line is a BLOCKLIST: each entry was added after a
+# specific stray file got committed. That approach only ever catches the
+# accident that already happened -- EleSync-project-knowledge.md was swept in
+# by `git add -A` (7311cdc) and broke CI for every commit after it, and a batch
+# of issue-body/advisory drafts matched none of these rules either.
+#
+# ci.yml's "No stray root-level files" step already solved this with an
+# explicit allowlist. This mirrors it, so a stray file at the root is invisible
+# to `git add -A` in the first place instead of being caught one release later.
+#
+# `/*` matches root entries only, so nested rules above still apply normally.
+# Adding a legitimate new root entry means editing BOTH this list and the
+# allowlist in ci.yml; tests/test_packaging.py asserts the two never drift.
+/*
+!/.gitattributes
+!/.github/
+!/.gitignore
+!/.impeccable/
+/.impeccable/config.local.json
+!/.pre-commit-config.yaml
+!/CHANGELOG.md
+!/CNAME
+!/CODE_OF_CONDUCT.md
+!/DESIGN.md
+!/LICENSE
+!/README.md
+!/RELEASING.md
+!/SECURITY.md
+!/SETUP.md
+!/assets/
+!/docs/
+!/elesync/
+!/examples/
+!/index.html
+!/packaging/
+!/pyproject.toml
+!/uv.lock
+!/scripts/
+!/templates/
+!/tests/
+!/vercel.json

@@ -1,0 +1,12 @@
+{
+  "conversations": [
+    {
+      "id": "c-1",
+      "title": "Subscription platform investor outreach",
+      "messages": [
+        {"role": "user", "content": "Help me draft an investor outreach plan."},
+        {"role": "assistant", "content": "Start with a one-page thesis and a target list."}
+      ]
+    }
+  ]
+}

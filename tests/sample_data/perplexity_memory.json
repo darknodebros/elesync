@@ -1,0 +1,8 @@
+{
+  "perplexity_memories": [
+    "User researches topics in depth before deciding.",
+    {"content": "Prefers answers with cited sources.", "type": "preference", "tags": ["research"]},
+    "Interested in space exploration and astronomy.",
+    "User researches topics in depth before deciding."
+  ]
+}

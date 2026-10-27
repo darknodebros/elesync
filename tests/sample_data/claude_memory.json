@@ -1,0 +1,7 @@
+{
+  "userMemories": [
+    {"content": "Based in Westbrook, near the coast.", "type": "fact", "tags": ["location"]},
+    {"content": "Working on the Helios side project.", "type": "project", "tags": ["coding"]},
+    {"content": "Has a younger sister.", "type": "relationship"}
+  ]
+}

@@ -1,0 +1,9 @@
+[
+  {
+    "conversations_memory": "User works on a Python CLI tool and prefers concise code review feedback.",
+    "project_memories": {
+      "00000000-0000-0000-0000-000000000001": "This project's backend uses SQLite; the frontend is a single static HTML file."
+    },
+    "account_uuid": "00000000-0000-0000-0000-000000000099"
+  }
+]

@@ -1,0 +1,8 @@
+{
+  "grok_memories": [
+    "User goes by alex_codes on X.",
+    {"content": "Likes following live space-launch threads.", "type": "preference", "tags": ["space"]},
+    "Building EleSync, a local-first AI memory vault.",
+    "User goes by alex_codes on X."
+  ]
+}

@@ -1,0 +1,230 @@
+name: CI
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.11", "3.12", "3.13", "3.14"]
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Set up locked dependency tooling
+        uses: astral-sh/setup-uv@37802adc94f370d6bfd71619e3f0bf239e1f3b78 # v7
+        with:
+          version: "0.12.23"
+
+      - name: Install package
+        run: |
+          uv sync --locked --extra dev --group ci --python "${{ matrix.python-version }}"
+          echo "$PWD/.venv/bin" >> "$GITHUB_PATH"
+
+
+      - name: Run tests
+        run: python -m unittest discover -s tests -v
+
+  # Keep browser-facing assets behind a focused gate as well as the full
+  # Python matrix. This catches broken JavaScript or PWA shell wiring without
+  # waiting for the broadest test job to finish.
+  web-smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+
+      - name: Set up Python 3.13
+        uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6
+        with:
+          python-version: "3.13"
+
+      - name: Set up Node.js
+        uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: "24"
+
+      - name: Set up locked dependency tooling
+        uses: astral-sh/setup-uv@37802adc94f370d6bfd71619e3f0bf239e1f3b78 # v7
+        with:
+          version: "0.12.23"
+
+      - name: Install package
+        run: |
+          uv sync --locked --extra dev --group ci --python 3.13
+          echo "$PWD/.venv/bin" >> "$GITHUB_PATH"
+
+      - name: Check dashboard JavaScript syntax
+        run: |
+          node --check elesync/static/dashboard-api.js
+          node --check elesync/static/dashboard.js
+          node --check elesync/static/dashboard-theme.js
+          node --check elesync/static/dashboard-graph-layout.js
+          node --check elesync/static/dashboard-graph.js
+          node --check elesync/static/dashboard-graph-atlas.js
+
+      - name: Run web and PWA smoke tests
+        run: python -m unittest tests.test_web tests.test_whatsapp_pwa tests.test_graph -q
+
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+
+      - name: Set up Python 3.13
+        uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6
+        with:
+          python-version: "3.13"
+
+      - name: Set up locked dependency tooling
+        uses: astral-sh/setup-uv@37802adc94f370d6bfd71619e3f0bf239e1f3b78 # v7
+        with:
+          version: "0.12.23"
+
+      - name: Install lint tools
+        run: |
+          uv sync --locked --extra dev --group ci --python 3.13
+          echo "$PWD/.venv/bin" >> "$GITHUB_PATH"
+
+      - name: ruff lint
+        run: ruff check elesync/ tests/ scripts/
+
+      - name: ruff format check
+        run: ruff format --check elesync/ tests/ scripts/
+
+      - name: mypy
+        run: mypy elesync/
+
+      - name: pip-audit
+        run: python -m pip_audit --desc --format=json
+
+      - name: Audit locked optional and build dependencies
+        run: |
+          uv export --locked --all-extras --all-groups --no-emit-project --output-file "$RUNNER_TEMP/locked-requirements.txt" > /dev/null
+          python -m pip_audit --no-deps --disable-pip --require-hashes -r "$RUNNER_TEMP/locked-requirements.txt"
+
+      # Both site deployments publish ONLY index.html and CNAME. Keep the page
+      # self-contained and prevent public setup or distribution guidance from
+      # returning unnoticed.
+      - name: Landing page integrity (description only)
+        run: |
+          python - << 'EOF'
+          import re, sys
+          html = open('index.html', encoding='utf-8').read()
+          errors = []
+
+          resources = re.findall(r'\b(?:src|href)="([^"]*)"', html)
+          if resources:
+              errors.append(f'index.html must not expose links or external resources: {resources}')
+
+          forbidden = re.compile(
+              r'\b(?:install|download|setup|quickstart|getting started|pipx?|pypi|'
+              r'scoop|homebrew|winget|docker|npm|npx|curl|wget|powershell|bash|'
+              r'terminal|command line|mcp|registry|github)\b',
+              re.IGNORECASE,
+          )
+          found = sorted({match.group(0).lower() for match in forbidden.finditer(html)})
+          if found:
+              errors.append(f'index.html contains public setup/distribution terms: {found}')
+
+          if errors:
+              print('\n'.join(errors)); sys.exit(1)
+          print('landing page OK: self-contained and distribution-free')
+          EOF
+
+      # A stray web-ui-dashboard.png was swept into the tree at v1.11.0 release
+      # time by `git add -A` and had to be kept out of the release by hand. The
+      # repo root is a small, stable set; anything new appearing there is almost
+      # always an accident (a loose script, a screenshot, a build artifact). Guard
+      # it with an explicit allowlist -- a genuinely new root file is a deliberate
+      # act and should require editing this list, which is exactly the friction we
+      # want. (Some binary assets are legitimate here, so this is an
+      # allowlist, not a blanket ban on any file type.)
+      - name: No stray root-level files
+        run: |
+          allowed=$(cat << 'EOF'
+          .gitattributes
+          .github
+          .gitignore
+          .impeccable
+          .pre-commit-config.yaml
+          CHANGELOG.md
+          CNAME
+          CODE_OF_CONDUCT.md
+          DESIGN.md
+          LICENSE
+          README.md
+          RELEASING.md
+          SECURITY.md
+          SETUP.md
+          assets
+          docs
+          elesync
+          examples
+          index.html
+          packaging
+          pyproject.toml
+          uv.lock
+          scripts
+          templates
+          tests
+          vercel.json
+          EOF
+          )
+          stray=0
+          while IFS= read -r entry; do
+            [ -z "$entry" ] && continue
+            if ! printf '%s\n' "$allowed" | grep -qxF "$entry"; then
+              echo "::error::Unexpected root-level entry: '$entry'"
+              stray=1
+            fi
+          done < <(git ls-tree --name-only HEAD)
+          if [ "$stray" -ne 0 ]; then
+            echo "A file appeared at the repo root that is not on the allowlist."
+            echo "If it's intentional, add it to the allowlist in this step."
+            echo "Otherwise move it into a subdirectory (docs/, assets/, scripts/...) or remove it."
+            exit 1
+          fi
+          echo "root clean: no stray files"
+
+  # Build the wheel and sdist, then validate them with twine. Catches
+  # broken metadata, missing files, and license issues in the package the
+  # private installer is built from. Nothing is uploaded anywhere. Runs on
+  # every push/PR so a broken build is never the thing discovered at release
+  # time.
+  package:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+
+      - name: Set up Python 3.13
+        uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6
+        with:
+          python-version: "3.13"
+
+      - name: Set up locked dependency tooling
+        uses: astral-sh/setup-uv@37802adc94f370d6bfd71619e3f0bf239e1f3b78 # v7
+        with:
+          version: "0.12.23"
+
+      - name: Install build tools
+        run: |
+          uv sync --locked --group ci --python 3.13
+          echo "$PWD/.venv/bin" >> "$GITHUB_PATH"
+
+      - name: Build wheel and sdist
+        run: python -m build --no-isolation
+
+      - name: Validate package metadata
+        run: twine check dist/*

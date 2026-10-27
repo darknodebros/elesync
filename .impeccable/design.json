@@ -1,0 +1,514 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-10-03T02:06:42+00:00",
+  "title": "Design System: EleSync",
+  "extensions": {
+    "colorMeta": {
+      "void": {
+        "role": "neutral",
+        "displayName": "Void",
+        "canonical": "#060817",
+        "oklch": "oklch(14.2% 0.033 274.4)",
+        "tonalRamp": [
+          "oklch(15% 0.033 274.4)",
+          "oklch(25% 0.033 274.4)",
+          "oklch(35% 0.033 274.4)",
+          "oklch(47% 0.033 274.4)",
+          "oklch(59% 0.033 274.4)",
+          "oklch(71% 0.033 274.4)",
+          "oklch(83% 0.033 274.4)",
+          "oklch(95% 0.033 274.4)"
+        ]
+      },
+      "hull": {
+        "role": "neutral",
+        "displayName": "Hull",
+        "canonical": "#0b0e22",
+        "oklch": "oklch(17.3% 0.041 274.8)",
+        "tonalRamp": [
+          "oklch(15% 0.041 274.8)",
+          "oklch(25% 0.041 274.8)",
+          "oklch(35% 0.041 274.8)",
+          "oklch(47% 0.041 274.8)",
+          "oklch(59% 0.041 274.8)",
+          "oklch(71% 0.041 274.8)",
+          "oklch(83% 0.041 274.8)",
+          "oklch(95% 0.041 274.8)"
+        ]
+      },
+      "hull-raised": {
+        "role": "neutral",
+        "displayName": "Hull Raised",
+        "canonical": "#121633",
+        "oklch": "oklch(21.4% 0.057 274.7)",
+        "tonalRamp": [
+          "oklch(15% 0.057 274.7)",
+          "oklch(25% 0.057 274.7)",
+          "oklch(35% 0.057 274.7)",
+          "oklch(47% 0.057 274.7)",
+          "oklch(59% 0.057 274.7)",
+          "oklch(71% 0.057 274.7)",
+          "oklch(83% 0.057 274.7)",
+          "oklch(95% 0.057 274.7)"
+        ]
+      },
+      "hull-high": {
+        "role": "neutral",
+        "displayName": "Hull High",
+        "canonical": "#1b2046",
+        "oklch": "oklch(26.2% 0.071 274.8)",
+        "tonalRamp": [
+          "oklch(15% 0.071 274.8)",
+          "oklch(25% 0.071 274.8)",
+          "oklch(35% 0.071 274.8)",
+          "oklch(47% 0.071 274.8)",
+          "oklch(59% 0.071 274.8)",
+          "oklch(71% 0.071 274.8)",
+          "oklch(83% 0.071 274.8)",
+          "oklch(95% 0.071 274.8)"
+        ]
+      },
+      "hull-violet": {
+        "role": "neutral",
+        "displayName": "Hull Violet",
+        "canonical": "#191541",
+        "oklch": "oklch(23.1% 0.080 282.2)",
+        "tonalRamp": [
+          "oklch(15% 0.080 282.2)",
+          "oklch(25% 0.080 282.2)",
+          "oklch(35% 0.080 282.2)",
+          "oklch(47% 0.080 282.2)",
+          "oklch(59% 0.080 282.2)",
+          "oklch(71% 0.080 282.2)",
+          "oklch(83% 0.080 282.2)",
+          "oklch(95% 0.080 282.2)"
+        ]
+      },
+      "seam": {
+        "role": "neutral",
+        "displayName": "Seam",
+        "canonical": "#252b52",
+        "oklch": "oklch(30.5% 0.070 274.9)",
+        "tonalRamp": [
+          "oklch(15% 0.070 274.9)",
+          "oklch(25% 0.070 274.9)",
+          "oklch(35% 0.070 274.9)",
+          "oklch(47% 0.070 274.9)",
+          "oklch(59% 0.070 274.9)",
+          "oklch(71% 0.070 274.9)",
+          "oklch(83% 0.070 274.9)",
+          "oklch(95% 0.070 274.9)"
+        ]
+      },
+      "seam-strong": {
+        "role": "neutral",
+        "displayName": "Seam Strong",
+        "canonical": "#394077",
+        "oklch": "oklch(39.4% 0.093 275.8)",
+        "tonalRamp": [
+          "oklch(15% 0.093 275.8)",
+          "oklch(25% 0.093 275.8)",
+          "oklch(35% 0.093 275.8)",
+          "oklch(47% 0.093 275.8)",
+          "oklch(59% 0.093 275.8)",
+          "oklch(71% 0.093 275.8)",
+          "oklch(83% 0.093 275.8)",
+          "oklch(95% 0.093 275.8)"
+        ]
+      },
+      "signal-violet": {
+        "role": "primary",
+        "displayName": "Signal Violet",
+        "canonical": "#a07cf0",
+        "oklch": "oklch(67.1% 0.168 295.9)",
+        "tonalRamp": [
+          "oklch(15% 0.168 295.9)",
+          "oklch(25% 0.168 295.9)",
+          "oklch(35% 0.168 295.9)",
+          "oklch(47% 0.168 295.9)",
+          "oklch(59% 0.168 295.9)",
+          "oklch(71% 0.168 295.9)",
+          "oklch(83% 0.168 295.9)",
+          "oklch(95% 0.168 295.9)"
+        ]
+      },
+      "signal-violet-deep": {
+        "role": "primary",
+        "displayName": "Signal Violet Deep",
+        "canonical": "#6d48d8",
+        "oklch": "oklch(52.6% 0.208 289.0)",
+        "tonalRamp": [
+          "oklch(15% 0.200 289.0)",
+          "oklch(25% 0.200 289.0)",
+          "oklch(35% 0.200 289.0)",
+          "oklch(47% 0.200 289.0)",
+          "oklch(59% 0.200 289.0)",
+          "oklch(71% 0.200 289.0)",
+          "oklch(83% 0.200 289.0)",
+          "oklch(95% 0.200 289.0)"
+        ]
+      },
+      "signal-violet-soft": {
+        "role": "primary",
+        "displayName": "Signal Violet Soft",
+        "canonical": "#c9b8ff",
+        "oklch": "oklch(82.2% 0.100 295.1)",
+        "tonalRamp": [
+          "oklch(15% 0.100 295.1)",
+          "oklch(25% 0.100 295.1)",
+          "oklch(35% 0.100 295.1)",
+          "oklch(47% 0.100 295.1)",
+          "oklch(59% 0.100 295.1)",
+          "oklch(71% 0.100 295.1)",
+          "oklch(83% 0.100 295.1)",
+          "oklch(95% 0.100 295.1)"
+        ]
+      },
+      "telemetry-cyan": {
+        "role": "secondary",
+        "displayName": "Telemetry Cyan",
+        "canonical": "#5cd3ea",
+        "oklch": "oklch(80.8% 0.110 212.4)",
+        "tonalRamp": [
+          "oklch(15% 0.110 212.4)",
+          "oklch(25% 0.110 212.4)",
+          "oklch(35% 0.110 212.4)",
+          "oklch(47% 0.110 212.4)",
+          "oklch(59% 0.110 212.4)",
+          "oklch(71% 0.110 212.4)",
+          "oklch(83% 0.110 212.4)",
+          "oklch(95% 0.110 212.4)"
+        ]
+      },
+      "readout": {
+        "role": "neutral",
+        "displayName": "Readout",
+        "canonical": "#eeeefa",
+        "oklch": "oklch(95.3% 0.016 286.1)",
+        "tonalRamp": [
+          "oklch(15% 0.016 286.1)",
+          "oklch(25% 0.016 286.1)",
+          "oklch(35% 0.016 286.1)",
+          "oklch(47% 0.016 286.1)",
+          "oklch(59% 0.016 286.1)",
+          "oklch(71% 0.016 286.1)",
+          "oklch(83% 0.016 286.1)",
+          "oklch(95% 0.016 286.1)"
+        ]
+      },
+      "readout-dim": {
+        "role": "neutral",
+        "displayName": "Readout Dim",
+        "canonical": "#a9aed0",
+        "oklch": "oklch(75.8% 0.049 278.6)",
+        "tonalRamp": [
+          "oklch(15% 0.049 278.6)",
+          "oklch(25% 0.049 278.6)",
+          "oklch(35% 0.049 278.6)",
+          "oklch(47% 0.049 278.6)",
+          "oklch(59% 0.049 278.6)",
+          "oklch(71% 0.049 278.6)",
+          "oklch(83% 0.049 278.6)",
+          "oklch(95% 0.049 278.6)"
+        ]
+      },
+      "readout-faint": {
+        "role": "neutral",
+        "displayName": "Readout Faint",
+        "canonical": "#8a90b8",
+        "oklch": "oklch(66.3% 0.060 278.0)",
+        "tonalRamp": [
+          "oklch(15% 0.060 278.0)",
+          "oklch(25% 0.060 278.0)",
+          "oklch(35% 0.060 278.0)",
+          "oklch(47% 0.060 278.0)",
+          "oklch(59% 0.060 278.0)",
+          "oklch(71% 0.060 278.0)",
+          "oklch(83% 0.060 278.0)",
+          "oklch(95% 0.060 278.0)"
+        ]
+      },
+      "status-go": {
+        "role": "tertiary",
+        "displayName": "Status Go",
+        "canonical": "#45d69a",
+        "oklch": "oklch(78.4% 0.151 161.6)",
+        "tonalRamp": [
+          "oklch(15% 0.151 161.6)",
+          "oklch(25% 0.151 161.6)",
+          "oklch(35% 0.151 161.6)",
+          "oklch(47% 0.151 161.6)",
+          "oklch(59% 0.151 161.6)",
+          "oklch(71% 0.151 161.6)",
+          "oklch(83% 0.151 161.6)",
+          "oklch(95% 0.151 161.6)"
+        ]
+      },
+      "status-hold": {
+        "role": "tertiary",
+        "displayName": "Status Hold",
+        "canonical": "#ecc15a",
+        "oklch": "oklch(82.9% 0.130 86.5)",
+        "tonalRamp": [
+          "oklch(15% 0.130 86.5)",
+          "oklch(25% 0.130 86.5)",
+          "oklch(35% 0.130 86.5)",
+          "oklch(47% 0.130 86.5)",
+          "oklch(59% 0.130 86.5)",
+          "oklch(71% 0.130 86.5)",
+          "oklch(83% 0.130 86.5)",
+          "oklch(95% 0.130 86.5)"
+        ]
+      },
+      "status-fault": {
+        "role": "tertiary",
+        "displayName": "Status Fault",
+        "canonical": "#ec6f86",
+        "oklch": "oklch(69.6% 0.155 10.5)",
+        "tonalRamp": [
+          "oklch(15% 0.155 10.5)",
+          "oklch(25% 0.155 10.5)",
+          "oklch(35% 0.155 10.5)",
+          "oklch(47% 0.155 10.5)",
+          "oklch(59% 0.155 10.5)",
+          "oklch(71% 0.155 10.5)",
+          "oklch(83% 0.155 10.5)",
+          "oklch(95% 0.155 10.5)"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Display",
+        "purpose": "Command-center greeting only."
+      },
+      "headline": {
+        "displayName": "Headline",
+        "purpose": "Page intros and active-project title."
+      },
+      "title": {
+        "displayName": "Title",
+        "purpose": "Card and section headings."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "Working copy, controls, nav."
+      },
+      "label": {
+        "displayName": "Eyebrow",
+        "purpose": "Cyan mono uppercase section eyebrows."
+      },
+      "numeral": {
+        "displayName": "Numeral",
+        "purpose": "Counts and metrics, read like gauges."
+      }
+    },
+    "shadows": [
+      {
+        "name": "glow",
+        "value": "0 0 0 1px rgba(160,124,240,0.35)",
+        "purpose": "Violet ring for hover/selection."
+      },
+      {
+        "name": "glow-cyan",
+        "value": "0 0 0 1px rgba(92,211,234,0.3)",
+        "purpose": "Cyan ring for hover on live/navigational items."
+      },
+      {
+        "name": "overlay",
+        "value": "0 8px 32px rgba(0,0,0,0.5)",
+        "purpose": "Dialogs only."
+      },
+      {
+        "name": "ambient",
+        "value": "0 2px 16px rgba(3,4,18,0.45)",
+        "purpose": "Toasts; legacy resting card shadow being retired."
+      }
+    ],
+    "motion": [
+      {
+        "name": "transition",
+        "value": "0.15s ease",
+        "purpose": "Default state transition (--transition)."
+      },
+      {
+        "name": "press",
+        "value": "120ms ease-out",
+        "purpose": "Button lift/press transform."
+      },
+      {
+        "name": "toast-in",
+        "value": "0.3s ease",
+        "purpose": "Toast fade-and-rise entrance."
+      },
+      {
+        "name": "elephant-float",
+        "value": "4.8s ease-in-out infinite",
+        "purpose": "Active-project hero elephant only; off under prefers-reduced-motion."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "phone-sm",
+        "value": "480px"
+      },
+      {
+        "name": "phone",
+        "value": "700px"
+      },
+      {
+        "name": "tablet",
+        "value": "900px"
+      },
+      {
+        "name": "console-compact",
+        "value": "1050px"
+      },
+      {
+        "name": "console-max",
+        "value": "1180px"
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Default Button",
+      "kind": "button",
+      "refersTo": "button",
+      "description": "Hairline neutral action; violet on hover.",
+      "html": "<button class=\"ds-btn\">Export vault</button>",
+      "css": ".ds-btn{font:500 13px Geist,system-ui,sans-serif;padding:8px 16px;border-radius:6px;border:1px solid var(--border,#252b52);background:var(--surface,#0b0e22);color:var(--text,#eeeefa);cursor:pointer;transition:border-color .15s ease,color .15s ease,box-shadow .15s ease}.ds-btn:hover{border-color:var(--accent,#a07cf0);color:var(--accent,#a07cf0);box-shadow:0 0 0 1px rgba(160,124,240,.35)}.ds-btn:focus-visible{outline:2px solid var(--accent2,#5cd3ea);outline-offset:3px}"
+    },
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "The one lit action per view.",
+      "html": "<button class=\"ds-btn-primary\">New project</button>",
+      "css": ".ds-btn-primary{font:500 13px Geist,system-ui,sans-serif;padding:8px 16px;border-radius:6px;border:1px solid transparent;background:linear-gradient(135deg,var(--accent,#a07cf0),var(--accent-strong,#6d48d8));color:var(--text,#eeeefa);cursor:pointer;box-shadow:0 0 14px rgba(160,124,240,.3);transition:box-shadow .15s ease,transform 120ms ease-out}.ds-btn-primary:hover{box-shadow:0 0 24px rgba(160,124,240,.5);transform:translateY(-1px)}.ds-btn-primary:active{transform:none}.ds-btn-primary:focus-visible{outline:2px solid var(--accent2,#5cd3ea);outline-offset:3px}"
+    },
+    {
+      "name": "Danger Button",
+      "kind": "button",
+      "refersTo": "button-danger",
+      "description": "Destructive action; fault-red outline.",
+      "html": "<button class=\"ds-btn-danger\">Forget memory</button>",
+      "css": ".ds-btn-danger{font:500 13px Geist,system-ui,sans-serif;padding:8px 16px;border-radius:6px;border:1px solid var(--danger,#ec6f86);background:var(--surface,#0b0e22);color:var(--danger,#ec6f86);cursor:pointer;transition:background-color .15s ease}.ds-btn-danger:hover{background:rgba(236,111,134,.1)}.ds-btn-danger:focus-visible{outline:2px solid var(--accent2,#5cd3ea);outline-offset:3px}"
+    },
+    {
+      "name": "Field",
+      "kind": "input",
+      "refersTo": "input",
+      "description": "Raised-hull text field; violet border on focus.",
+      "html": "<label class=\"ds-field\"><span>Project name</span><input placeholder=\"e.g. Thesis research\"></label>",
+      "css": ".ds-field{display:grid;gap:6px;font-family:Geist,system-ui,sans-serif}.ds-field span{font-size:12px;font-weight:600;letter-spacing:.5px;text-transform:uppercase;color:var(--text2,#a9aed0)}.ds-field input{background:var(--surface2,#121633);border:1px solid var(--border,#252b52);border-radius:6px;padding:9px 12px;color:var(--text,#eeeefa);font:13px Geist,system-ui,sans-serif;outline:none;transition:border-color .15s ease}.ds-field input::placeholder{color:var(--text3,#8a90b8)}.ds-field input:focus{border-color:var(--accent,#a07cf0)}.ds-field input:focus-visible{outline:2px solid var(--accent2,#5cd3ea);outline-offset:3px}"
+    },
+    {
+      "name": "Sidebar Nav",
+      "kind": "nav",
+      "refersTo": "nav-item",
+      "description": "Desktop sidebar items; violet-tinted active state.",
+      "html": "<nav class=\"ds-nav\"><a class=\"ds-nav-item is-active\" href=\"#\"><svg viewBox=\"0 0 256 256\" width=\"16\" height=\"16\" fill=\"currentColor\" aria-hidden=\"true\"><path d=\"M104 40H56a16 16 0 0 0-16 16v48a16 16 0 0 0 16 16h48a16 16 0 0 0 16-16V56a16 16 0 0 0-16-16Zm96 0h-48a16 16 0 0 0-16 16v48a16 16 0 0 0 16 16h48a16 16 0 0 0 16-16V56a16 16 0 0 0-16-16Zm-96 96H56a16 16 0 0 0-16 16v48a16 16 0 0 0 16 16h48a16 16 0 0 0 16-16v-48a16 16 0 0 0-16-16Zm96 0h-48a16 16 0 0 0-16 16v48a16 16 0 0 0 16 16h48a16 16 0 0 0 16-16v-48a16 16 0 0 0-16-16Z\"/></svg>Home</a><a class=\"ds-nav-item\" href=\"#\"><svg viewBox=\"0 0 256 256\" width=\"16\" height=\"16\" fill=\"currentColor\" aria-hidden=\"true\"><path d=\"M216 72h-84.7l-27.3-27.3A15.9 15.9 0 0 0 92.7 40H40a16 16 0 0 0-16 16v144a16 16 0 0 0 16 16h176a16 16 0 0 0 16-16V88a16 16 0 0 0-16-16Z\"/></svg>Projects</a></nav>",
+      "css": ".ds-nav{display:grid;gap:2px;width:188px;padding:8px 6px;background:var(--surface,#0b0e22);font-family:Geist,system-ui,sans-serif}.ds-nav-item{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:6px;color:var(--text2,#a9aed0);font-size:13px;font-weight:500;text-decoration:none;transition:background-color .15s ease,color .15s ease}.ds-nav-item:hover{background:var(--surface2,#121633);color:var(--text,#eeeefa)}.ds-nav-item.is-active{background:rgba(160,124,240,.13);color:var(--accent,#a07cf0)}.ds-nav-item:focus-visible{outline:2px solid var(--accent2,#5cd3ea);outline-offset:3px}"
+    },
+    {
+      "name": "Status Chip",
+      "kind": "chip",
+      "refersTo": "status-chip",
+      "description": "Lamp-coloured mission status.",
+      "html": "<span class=\"ds-chip ds-chip-go\">Active</span> <span class=\"ds-chip ds-chip-hold\">Paused</span> <span class=\"ds-chip\">Archived</span>",
+      "css": ".ds-chip{display:inline-block;padding:2px 7px;border-radius:10px;font:600 12px Geist,system-ui,sans-serif;letter-spacing:.3px;text-transform:uppercase;background:var(--surface3,#1b2046);color:var(--text3,#8a90b8)}.ds-chip-go{color:var(--success,#45d69a);background:rgba(69,214,154,.1)}.ds-chip-hold{color:var(--warn,#ecc15a);background:rgba(236,193,90,.1)}"
+    },
+    {
+      "name": "Card",
+      "kind": "card",
+      "refersTo": "card",
+      "description": "Flat hull panel; violet ring on hover.",
+      "html": "<article class=\"ds-card\"><p class=\"ds-eyebrow\">YOUR KNOWLEDGE</p><h3>Saved memories</h3><strong>1,284</strong></article>",
+      "css": ".ds-card{background:var(--surface,#0b0e22);border:1px solid var(--border,#252b52);border-radius:10px;padding:18px;color:var(--text,#eeeefa);font-family:Geist,system-ui,sans-serif;transition:border-color .2s ease,box-shadow .2s ease}.ds-card:hover{border-color:var(--accent,#a07cf0);box-shadow:0 0 0 1px rgba(160,124,240,.35)}.ds-eyebrow{margin:0 0 6px;color:var(--accent2,#5cd3ea);font:700 12px 'Geist Mono',ui-monospace,monospace;letter-spacing:1.45px}.ds-card h3{margin:0 0 10px;font-size:14px;font-weight:600}.ds-card strong{font:700 28px 'Geist Mono',ui-monospace,monospace;color:var(--accent,#a07cf0)}"
+    },
+    {
+      "name": "Project Row",
+      "kind": "custom",
+      "refersTo": "project-row",
+      "description": "Clickable project with gradient initial mark and mono count.",
+      "html": "<button class=\"ds-project\"><span class=\"ds-project-mark\">T</span><span class=\"ds-project-copy\"><strong>Thesis research</strong><small>Claude · ChatGPT</small></span><span class=\"ds-project-count\">212<small>memories</small></span></button>",
+      "css": ".ds-project{display:flex;align-items:center;gap:10px;width:320px;padding:10px;border:1px solid var(--border,#252b52);border-radius:6px;background:var(--surface2,#121633);color:var(--text,#eeeefa);text-align:left;cursor:pointer;font-family:Geist,system-ui,sans-serif;transition:border-color .15s ease,box-shadow .15s ease,transform .15s ease}.ds-project:hover{border-color:var(--accent2,#5cd3ea);box-shadow:0 0 0 1px rgba(92,211,234,.3);transform:translateX(2px)}.ds-project:focus-visible{outline:2px solid var(--accent2,#5cd3ea);outline-offset:3px}.ds-project-mark{display:grid;place-items:center;width:34px;height:34px;flex:none;border-radius:10px;background:linear-gradient(135deg,var(--accent,#a07cf0),var(--accent2,#5cd3ea));font-weight:700}.ds-project-copy{flex:1;display:grid;gap:3px;min-width:0}.ds-project-copy small{color:var(--text3,#8a90b8);font-size:12px}.ds-project-count{color:var(--accent2,#5cd3ea);font:700 14px 'Geist Mono',ui-monospace,monospace;text-align:right}.ds-project-count small{display:block;font:12px Geist,system-ui,sans-serif;color:var(--text3,#8a90b8)}"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Mission Console",
+    "overview": "EleSync is the console the user runs their AI crew from. Every assistant (ChatGPT, Claude, Gemini, Grok and the rest) is a station reporting in, every project is a mission with its own boundary, and the dashboard is where the operator sees, at a glance, what is live, what is waiting, and what crossed a line. The room is dark on purpose. Deep indigo hulls recede so that the only things that light up are things worth reading: a status, an active project, a focused control, the elephant.\n\nThe console is **precise and quiet**. Density is real (12–14px working type, compact rows, mono numerals for counts), but nothing shouts. Borders are hairlines, corners are small, and surfaces sit flat as tonal layers. Light is a signal, not a decoration: violet means \"this is yours / this is selected\", cyan means \"this is live / this is telemetry\", and the green, amber and red status colours mean exactly what they say. The one place the console is allowed to perform is the active-project hero, where the elephant floats in its cyan-violet glow. It is the station's insignia, not wallpaper.\n\nThe UI is dark-only and treats the phone as a full console, not a port: the same mission state, compressed into a bottom tab bar and single-column panels, with real safe-area handling.",
+    "keyCharacteristics": [
+      "Dark-only indigo hull (`void` → `hull` → `hull-raised` → `hull-high`) with hairline `seam` borders.",
+      "One accent (`signal-violet`) for ownership and selection; `telemetry-cyan` reserved for live state, info, focus rings and data.",
+      "Geist for reading, Geist Mono for eyebrow labels and counts. Both are self-hosted and work offline.",
+      "Flat tonal layering at rest; glow appears only as a response to state.",
+      "Small radii (6 / 10 / 16px), compact padding, mission-status chips in uppercase.",
+      "Phosphor line icons (SVG sprite, `currentColor`) everywhere. No emoji glyphs.",
+      "Phone layout: fixed bottom tab bar at ≤700px with `env(safe-area-inset-*)` padding."
+    ],
+    "rules": [
+      {
+        "name": "The Two Lights Rule",
+        "body": "Violet means *yours / selected*; cyan means *live / telemetry / focus*. Never swap them, and never introduce a third accent hue for decoration.",
+        "section": "colors"
+      },
+      {
+        "name": "The Lamp Rule",
+        "body": "Green, amber and red are status lamps and only ever report state. A green button that isn't confirming success is a lie.",
+        "section": "colors"
+      },
+      {
+        "name": "The Token-Only Rule",
+        "body": "Colour comes from the `:root` custom properties. For a tint, use the channel tokens (`--accent-rgb`, `--accent2-rgb`, `--success-rgb`, `--warn-rgb`, `--danger-rgb`, `--bg-rgb`, `--surface-rgb`) as `rgb(var(--accent-rgb) / .16)`, never a literal `rgba()`. The old neon literals (`rgba(192,77,255,…)`, `rgba(40,231,255,…)`) are retired.",
+        "section": "colors"
+      },
+      {
+        "name": "The 12px Floor Rule",
+        "body": "No visible text below 12px, including badges, metadata and tab-bar labels.",
+        "section": "typography"
+      },
+      {
+        "name": "The Instrument Rule",
+        "body": "Numbers that the user compares (counts, totals, metrics) are set in Geist Mono so they read like gauges, not prose.",
+        "section": "typography"
+      },
+      {
+        "name": "The Phone Is a Console Rule",
+        "body": "Every surface must be fully operable at 393px wide inside the bottom-tab layout, with safe-area insets respected. A desktop-only control is a bug.",
+        "section": "layout"
+      },
+      {
+        "name": "The Glow-Is-State Rule",
+        "body": "A glow, ring or lift must answer \"what changed?\" (hovered, focused, selected, live). If nothing changed, the surface is flat.",
+        "section": "elevation"
+      },
+      {
+        "name": "The One Bloom Rule",
+        "body": "Only the active-project hero gets gradient light and the animated elephant. Every other card is a flat hull.",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "**Do** pull every colour, radius and font from the `:root` custom properties in `elesync/static/dashboard.css`, and mirror any token change into `login.css`, which redeclares the palette.",
+      "**Do** keep violet for selection and ownership and cyan for live state, info and focus (The Two Lights Rule).",
+      "**Do** keep surfaces flat at rest and add glow only for hover, focus, selection or live state (The Glow-Is-State Rule).",
+      "**Do** set compared numbers in Geist Mono and eyebrows in Geist Mono 12px uppercase cyan.",
+      "**Do** gate hover effects behind `(hover:hover) and (pointer:fine)` and honour `prefers-reduced-motion`.",
+      "**Do** use Phosphor icons from the inline SVG sprite (`<svg class=\"ph\"><use href=\"#ph-NAME\"/></svg>`), inheriting `currentColor`.",
+      "**Do** use the z-index scale tokens (`--z-raised` … `--z-toast`), never bare numbers.",
+      "**Do** design every surface for the ≤700px bottom-tab layout with safe-area insets and 44px touch targets."
+    ],
+    "donts": [
+      "**Don't** add a light theme or light surfaces; EleSync is dark-only.",
+      "**Don't** use emoji or Unicode glyphs as icons.",
+      "**Don't** write literal `rgba()` tints of palette colours; use `rgb(var(--accent-rgb) / α)` and the other channel tokens.",
+      "**Don't** give ordinary cards gradient fills, resting shadows or the elephant. The bloom belongs to the active-project hero only (The One Bloom Rule).",
+      "**Don't** use status green, amber or red for anything but status.",
+      "**Don't** set visible text below 12px.",
+      "**Don't** fill buttons or surfaces with an assistant's brand colour; brand colours are rules, dots and tags only.",
+      "**Don't** use the elephant artwork in any form other than the supplied official asset (`elesync-main-logo.webp` / `assets/elesync-official-logo.png`). The one approved exception is the Cosmic theme's gold copy (`elesync-main-logo-cosmic.webp/.png`, `elesync-favicon-cosmic.png`), generated from the official asset by `scripts/build_cosmic_icons.py`. Regenerate it with that script, never edit it by hand, and never recolour the elephant with a CSS hue filter."
+    ]
+  }
+}

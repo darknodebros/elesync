@@ -1,0 +1,8 @@
+{
+  "deepseek_memories": [
+    "User codes primarily in Python and TypeScript.",
+    {"content": "Prefers metric units and 24-hour time.", "type": "preference", "tags": ["formatting"]},
+    "Interested in local-first, privacy-preserving tools.",
+    "User codes primarily in Python and TypeScript."
+  ]
+}

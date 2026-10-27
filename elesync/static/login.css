@@ -1,0 +1,83 @@
+  /* Same dark palette, type and radii as dashboard.css. */
+  @font-face { font-family:'Geist'; src:url('/static/Geist-Variable.woff2') format('woff2'); font-weight:100 900; font-style:normal; font-display:swap; }
+  :root {
+    --bg: #060817;
+    --surface: #0b0e22;
+    --surface2: #121633;
+    --border: #252b52;
+    --accent: #a07cf0;
+    --accent-strong: #6d48d8;
+    --accent2: #5cd3ea;
+    --text: #eeeefa;
+    --text2: #a9aed0;
+    --danger: #ec6f86;
+    --radius: 10px;
+    --radius-sm: 6px;
+    --font: 'Geist', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    color-scheme: dark;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { -webkit-tap-highlight-color: transparent; -webkit-text-size-adjust: 100%; }
+  body {
+    background: var(--bg); color: var(--text); font-family: var(--font);
+    min-height: 100vh; min-height: 100dvh; display: flex; align-items: center; justify-content: center;
+  }
+  .card {
+    background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
+    padding: 32px; width: 320px; max-width: calc(100vw - 32px);
+  }
+  .card h1 { font-size: 18px; font-weight: 600; letter-spacing: -0.2px; margin-bottom: 4px; }
+  .card p.sub { color: var(--text2); font-size: 13px; margin-bottom: 24px; }
+  label { display: block; font-size: 12px; color: var(--text2); margin-bottom: 6px; margin-top: 14px; }
+  input {
+    width: 100%; background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius-sm);
+    color: var(--text); padding: 10px 12px; font-size: 16px; font-family: inherit;
+  }
+  input:focus { outline: none; border-color: var(--accent); }
+  input:focus-visible, button:focus-visible { outline: 2px solid var(--accent2); outline-offset: 2px; }
+  button {
+    width: 100%; margin-top: 20px; background: var(--accent-strong); color: var(--text); border: none;
+    border-radius: var(--radius-sm); padding: 11px; min-height: 44px; font-size: 14px; font-weight: 600; cursor: pointer;
+    font-family: inherit; touch-action: manipulation; transition: background-color .15s ease, transform .1s ease-out;
+  }
+  @media (hover: hover) and (pointer: fine) { button:not(:disabled):hover { background: #7b58e4; } }
+  button:not(:disabled):active { transform: scale(.98); }
+  button:disabled { opacity: 0.5; cursor: not-allowed; }
+  .error {
+    display: none; background: rgba(236,111,134,0.12); border: 1px solid var(--danger);
+    color: var(--danger); border-radius: var(--radius-sm); padding: 10px 12px; font-size: 13px; margin-top: 14px;
+  }
+
+  /* Cosmic theme (dashboard-theme.js sets it from the dashboard choice): the palette, starfield,
+     glass card, serif heading and gold button of dashboard-theme-cosmic.css. */
+  html[data-theme="cosmic"] {
+    --bg: #05060b; --surface: #0a0b13; --surface2: #11131f; --border: #43391f;
+    --accent: #f2b84b; --accent-strong: #d99a2b; --accent2: #7ab8ff;
+    --text: #f4ecdc; --text2: #c3b9a5; --danger: #ff6b78;
+  }
+  html[data-theme="cosmic"] body {
+    background-image:
+      radial-gradient(1px 1px at 23px 41px, rgba(255,255,255,.55), transparent),
+      radial-gradient(1px 1px at 97px 150px, rgba(255,244,214,.4), transparent),
+      radial-gradient(1.5px 1.5px at 171px 83px, rgba(255,214,140,.55), transparent),
+      radial-gradient(1px 1px at 139px 12px, rgba(170,200,255,.45), transparent),
+      radial-gradient(ellipse at 50% 30%, rgba(242,184,75,.12), transparent 50%);
+    background-size: 211px 197px, 263px 241px, 307px 293px, 181px 223px, auto;
+  }
+  html[data-theme="cosmic"] .card {
+    background: linear-gradient(150deg, rgba(255,244,214,.07), rgba(255,244,214,.015) 60%), rgba(8,9,16,.7);
+    border-color: rgba(255,226,163,.17);
+    box-shadow: inset 0 1px 0 rgba(255,244,214,.09), 0 12px 34px rgba(0,0,0,.5), 0 0 60px rgba(242,184,75,.06);
+    -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px);
+  }
+  html[data-theme="cosmic"] .card h1 {
+    font-family: 'Iowan Old Style', 'Palatino Linotype', Palatino, Georgia, serif;
+    font-weight: 500; letter-spacing: .16em; text-transform: uppercase;
+  }
+  html[data-theme="cosmic"] button {
+    background: linear-gradient(135deg, #ffd885 0%, #d99a2b 100%); color: #1b1307;
+    box-shadow: 0 0 20px rgba(242,184,75,.3);
+  }
+  @media (hover: hover) and (pointer: fine) {
+    html[data-theme="cosmic"] button:not(:disabled):hover { background: linear-gradient(135deg, #ffe2a3 0%, #e5a73a 100%); }
+  }

@@ -1,0 +1,391 @@
+name: Private EleSync Release
+
+# IMMUTABLE RELEASES ARE ENABLED on this repository.
+#
+# Assets and the git tag are frozen the instant a release is published. You
+# cannot attach a binary afterwards — not with actions/upload-release-asset,
+# not with softprops/action-gh-release, not with the API. The block is
+# server-side. This is why v1.9.1, v1.9.0, v1.7.4 and v1.10.0 all shipped with
+# ZERO assets in the release: the upload failed
+# on every single release and continue-on-error hid it.
+#
+# GitHub's prescribed flow, and the only one that works here:
+#     create a DRAFT  ->  attach all assets to the draft  ->  publish the draft
+# https://docs.github.com/en/code-security/concepts/supply-chain-security/immutable-releases
+#
+# Hence this triggers on a v* TAG PUSH, not on `release: published` —
+# publishing the draft at the end would otherwise re-trigger the workflow.
+#
+# A published release can be deleted, but its tag name can NEVER be reused.
+# So a release that shipped without assets is unrecoverable: ship a patch bump.
+
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Existing tag to build and release, e.g. v1.10.1"
+        required: true
+        type: string
+
+permissions:
+  contents: write
+
+jobs:
+  # ---- 0. gate: CI must be GREEN for the exact commit being released -------
+  #
+  # A tag push jumps straight into the release pipeline, so nothing previously
+  # stopped a tag on a red commit from drafting and publishing a release.
+  # That is how v1.15.2 shipped while master CI was failing.
+  #
+  # GitHub has no native "required check" for tag-triggered workflows: branch
+  # protection guards pushes to a branch, not the creation of a tag. So the
+  # gate is explicit — resolve the commit the tag points at, then wait for the
+  # CI run on that same SHA and demand a `success` conclusion.
+  ci-gate:
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read     # read CI workflow-run conclusions
+      contents: read    # dereference the tag ref
+    steps:
+      - name: Resolve the commit this tag points at
+        id: sha
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG: ${{ github.event_name == 'workflow_dispatch' && inputs.tag || github.ref_name }}
+        run: |
+          set -euo pipefail
+          # An annotated tag's ref points at a tag object, not a commit, so it
+          # needs one more dereference. Lightweight tags point straight at it.
+          gh api "repos/$GITHUB_REPOSITORY/git/ref/tags/$TAG" > ref.json
+          type=$(jq -r '.object.type' ref.json)
+          sha=$(jq -r '.object.sha' ref.json)
+          if [ "$type" = "tag" ]; then
+            sha=$(gh api "repos/$GITHUB_REPOSITORY/git/tags/$sha" --jq '.object.sha')
+          fi
+          echo "::notice::$TAG points at commit $sha"
+          echo "sha=$sha" >> "$GITHUB_OUTPUT"
+
+      - name: Require a green CI run for that commit
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SHA: ${{ steps.sha.outputs.sha }}
+        run: |
+          set -euo pipefail
+          # The tag is usually pushed seconds after the release commit, so CI is
+          # typically still queued or running — poll rather than read once.
+          deadline=$(( SECONDS + 1800 ))
+          while :; do
+            gh api "repos/$GITHUB_REPOSITORY/actions/workflows/ci.yml/runs?head_sha=$SHA&per_page=1" > runs.json
+            if [ "$(jq -r '.total_count' runs.json)" -gt 0 ]; then
+              status=$(jq -r '.workflow_runs[0].status' runs.json)
+              conclusion=$(jq -r '.workflow_runs[0].conclusion // "pending"' runs.json)
+              url=$(jq -r '.workflow_runs[0].html_url' runs.json)
+              if [ "$status" = "completed" ]; then
+                if [ "$conclusion" = "success" ]; then
+                  echo "::notice::CI green for $SHA - $url"
+                  exit 0
+                fi
+                echo "::error::CI concluded '$conclusion' for $SHA. Refusing to cut a release on red. $url"
+                exit 1
+              fi
+              echo "  CI $status ... $url"
+            else
+              echo "  no CI run for $SHA yet ..."
+            fi
+            if [ "$SECONDS" -ge "$deadline" ]; then
+              echo "::error::Timed out waiting for CI on $SHA. ci.yml only runs on pushes to master and on PRs, so a tag on a commit that never reached master has no run to wait for. Push the commit to master, let CI go green, then tag."
+              exit 1
+            fi
+            sleep 20
+          done
+
+  # ---- 1. draft ------------------------------------------------------------
+  draft:
+    needs: ci-gate
+    runs-on: ubuntu-latest
+    outputs:
+      tag: ${{ steps.tag.outputs.tag }}
+      version: ${{ steps.tag.outputs.version }}
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+
+      - id: tag
+        run: |
+          tag="${{ github.event_name == 'workflow_dispatch' && inputs.tag || github.ref_name }}"
+          echo "tag=$tag" >> "$GITHUB_OUTPUT"
+          echo "version=${tag#v}" >> "$GITHUB_OUTPUT"
+
+      - name: Extract release notes for this version from CHANGELOG.md
+        env:
+          TAG: ${{ steps.tag.outputs.tag }}
+        run: |
+          set -euo pipefail
+          ver="${TAG#v}"
+          awk -v v="$ver" '
+            $0 ~ "^## \\[" v "\\]" { inside=1; next }
+            inside && /^## \[/     { exit }
+            inside                 { print }
+          ' CHANGELOG.md | sed -e 's/\r$//' > NOTES.md
+          if [ ! -s NOTES.md ]; then
+            echo "::error::CHANGELOG.md has no '## [$ver]' section — refusing to cut a release with empty notes"
+            exit 1
+          fi
+          echo "--- notes ---"; cat NOTES.md
+
+      - name: Create the release as a DRAFT (assets must land before publish)
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG: ${{ steps.tag.outputs.tag }}
+        run: |
+          set -euo pipefail
+          if gh release view "$TAG" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            is_draft=$(gh release view "$TAG" --repo "$GITHUB_REPOSITORY" --json isDraft --jq .isDraft)
+            if [ "$is_draft" != "true" ]; then
+              echo "::error::Release $TAG is already PUBLISHED. Immutable releases freeze assets at publish, so binaries can never be attached to it, and the tag name cannot be reused. Ship a patch bump instead."
+              exit 1
+            fi
+            echo "::notice::Reusing existing draft $TAG"
+          else
+            gh release create "$TAG" --repo "$GITHUB_REPOSITORY" \
+              --draft --title "$TAG" --notes-file NOTES.md
+          fi
+
+  # ---- 2. build + attach to the DRAFT --------------------------------------
+  build:
+    needs: draft
+    strategy:
+      fail-fast: false
+      matrix:
+        # Windows only while EleSync is tested on Windows alone. The steps below
+        # still handle linux and macos: to ship those again, restore their
+        # entries (ele-linux; ele-macos + EleSync-macos.zip) and add their
+        # assets to the publish check.
+        include:
+          - os: windows-latest
+            target: windows
+            cli_asset: ele-windows.zip
+            gui_asset: EleSync-windows.zip
+            installer_asset: EleSync-Setup.exe
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          ref: ${{ needs.draft.outputs.tag }}
+
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6
+        with:
+          python-version: "3.12"
+
+      - name: Set up locked dependency tooling
+        uses: astral-sh/setup-uv@37802adc94f370d6bfd71619e3f0bf239e1f3b78 # v7
+        with:
+          version: "0.12.23"
+
+      - name: Install locked release dependencies
+        run: |
+          uv sync --locked --group release --python 3.12
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          "$env:GITHUB_WORKSPACE\.venv\Scripts" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+
+      # Audit the actual locked release environment as well as CI.
+      - name: Audit release dependencies
+        shell: bash
+        run: python -m pip_audit --desc --format=json
+
+      - name: Install Inno Setup
+        if: matrix.target == 'windows'
+        shell: pwsh
+        run: choco install innosetup --no-progress --yes
+
+      - name: Build executable
+        run: python scripts/build.py
+
+      - name: Sign Windows CLI executable
+        if: matrix.target == 'windows' && env.WINDOWS_CERT_BASE64 != ''
+        env:
+          WINDOWS_CERT_BASE64: ${{ secrets.WINDOWS_CERT_BASE64 }}
+          WINDOWS_CERT_PASSWORD: ${{ secrets.WINDOWS_CERT_PASSWORD }}
+        shell: pwsh
+        run: |
+          $certBytes = [Convert]::FromBase64String($env:WINDOWS_CERT_BASE64)
+          $certPath = Join-Path $env:RUNNER_TEMP "codesign.pfx"
+          [IO.File]::WriteAllBytes($certPath, $certBytes)
+          $signtool = (Get-ChildItem -Path "C:\Program Files (x86)\Windows Kits" -Recurse -Filter "signtool.exe" | Where-Object { $_.FullName -like "*x64*" } | Select-Object -First 1).FullName
+          & $signtool sign /f $certPath /p $env:WINDOWS_CERT_PASSWORD /tr http://timestamp.digicert.com /td SHA256 /fd SHA256 "dist\ele-windows\ele.exe"
+          & $signtool sign /f $certPath /p $env:WINDOWS_CERT_PASSWORD /tr http://timestamp.digicert.com /td SHA256 /fd SHA256 "dist\EleSync-windows\EleSync.exe"
+          Remove-Item $certPath -Force
+
+      - name: Skip Windows signing (no certificate)
+        if: matrix.target == 'windows' && env.WINDOWS_CERT_BASE64 == ''
+        env:
+          WINDOWS_CERT_BASE64: ${{ secrets.WINDOWS_CERT_BASE64 }}
+        run: echo "::notice::No signing certificate configured — skipping Windows code signing"
+
+      - name: Sign and notarize macOS executables
+        if: matrix.target == 'macos' && env.MACOS_CERT_BASE64 != ''
+        env:
+          MACOS_CERT_BASE64: ${{ secrets.MACOS_CERT_BASE64 }}
+          MACOS_CERT_PASSWORD: ${{ secrets.MACOS_CERT_PASSWORD }}
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+          APPLE_APP_PASSWORD: ${{ secrets.APPLE_APP_PASSWORD }}
+        run: |
+          KEYCHAIN="build.keychain"
+          KEYCHAIN_PASSWORD="actions-temp"
+          security create-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN"
+          security default-keychain -s "$KEYCHAIN"
+          security unlock-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN"
+          echo "$MACOS_CERT_BASE64" | base64 --decode > "$RUNNER_TEMP/cert.p12"
+          security import "$RUNNER_TEMP/cert.p12" -k "$KEYCHAIN" -P "$MACOS_CERT_PASSWORD" -T /usr/bin/codesign
+          security set-key-partition-list -S apple-tool:,apple: -s -k "$KEYCHAIN_PASSWORD" "$KEYCHAIN"
+          rm -f "$RUNNER_TEMP/cert.p12"
+          codesign --deep --force --options runtime --sign "Developer ID Application" dist/ele-macos/ele
+          codesign --deep --force --options runtime --sign "Developer ID Application" dist/EleSync-macos/EleSync.app
+          # Notarize the .app bundle in a zip
+          ( cd dist/EleSync-macos && zip -r "$RUNNER_TEMP/EleSync-macos.zip" EleSync.app )
+          xcrun notarytool submit "$RUNNER_TEMP/EleSync-macos.zip" \
+            --apple-id "$APPLE_ID" --team-id "$APPLE_TEAM_ID" \
+            --password "$APPLE_APP_PASSWORD" --wait
+          xcrun stapler staple dist/EleSync-macos/EleSync.app
+          security delete-keychain "$KEYCHAIN"
+
+      - name: Skip macOS signing (no certificate)
+        if: matrix.target == 'macos' && env.MACOS_CERT_BASE64 == ''
+        env:
+          MACOS_CERT_BASE64: ${{ secrets.MACOS_CERT_BASE64 }}
+        run: echo "::notice::No signing certificate configured — skipping macOS code signing"
+
+      # Stage under the exact filenames expected by private distribution.
+      - name: Stage assets and smoke-test the binaries
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p upload
+          cli_built="dist/ele-${{ matrix.target }}/ele"
+          gui_built=""
+
+          if [ "${{ matrix.target }}" = "windows" ]; then
+            cli_built="dist/ele-windows/ele.exe"
+            gui_built="dist/EleSync-windows/EleSync.exe"
+            test -f "$cli_built" || { echo "::error::build.py produced no exe at $cli_built"; exit 1; }
+            test -f "$gui_built" || { echo "::error::build.py produced no GUI exe at $gui_built"; exit 1; }
+            "$cli_built" --version
+            "$gui_built" --version
+            # Both standalone apps can serve the dashboard. A successful
+            # --version smoke test does not prove its CSS/JS data was bundled.
+            test -f "dist/ele-windows/_internal/elesync/static/dashboard.css" \
+              || { echo "::error::CLI bundle is missing dashboard static assets"; exit 1; }
+            test -f "dist/EleSync-windows/_internal/elesync/static/dashboard.css" \
+              || { echo "::error::GUI bundle is missing dashboard static assets"; exit 1; }
+            ( cd dist/ele-windows && 7z a -tzip -mx=9 "$GITHUB_WORKSPACE/upload/${{ matrix.cli_asset }}" . )
+            ( cd dist/EleSync-windows && 7z a -tzip -mx=9 "$GITHUB_WORKSPACE/upload/${{ matrix.gui_asset }}" . )
+            # A zip missing _internal/ would download fine and fail on launch.
+            7z l "upload/${{ matrix.cli_asset }}" | grep -q "_internal" \
+              || { echo "::error::CLI zip has no _internal/ payload — the exe would not start"; exit 1; }
+            7z l "upload/${{ matrix.gui_asset }}" | grep -q "_internal" \
+              || { echo "::error::GUI zip has no _internal/ payload — the exe would not start"; exit 1; }
+          else
+            test -f "$cli_built" || { echo "::error::build.py produced no binary at $cli_built"; exit 1; }
+            "$cli_built" --version
+            cp "$cli_built" "upload/${{ matrix.cli_asset }}"
+
+            if [ "${{ matrix.target }}" = "macos" ]; then
+              gui_built="dist/EleSync-macos/EleSync.app"
+              test -d "$gui_built" || { echo "::error::build.py produced no .app bundle at $gui_built"; exit 1; }
+              # Staple was done in the notarization step; just zip the .app for distribution.
+              ( cd dist/EleSync-macos && zip -r "$GITHUB_WORKSPACE/upload/${{ matrix.gui_asset }}" EleSync.app )
+            fi
+          fi
+          ls -lh upload/
+
+      - name: Build Windows installer
+        if: matrix.target == 'windows'
+        shell: pwsh
+        run: |
+          & "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" "/DMyAppVersion=${{ needs.draft.outputs.version }}" "packaging\windows\EleSync.iss"
+          if (!(Test-Path "dist\installer\${{ matrix.installer_asset }}")) {
+            Write-Error "Inno Setup produced no installer"
+          }
+          Copy-Item "dist\installer\${{ matrix.installer_asset }}" "upload\${{ matrix.installer_asset }}"
+          Get-ChildItem upload
+
+      - name: Sign Windows installer
+        if: matrix.target == 'windows' && env.WINDOWS_CERT_BASE64 != ''
+        env:
+          WINDOWS_CERT_BASE64: ${{ secrets.WINDOWS_CERT_BASE64 }}
+          WINDOWS_CERT_PASSWORD: ${{ secrets.WINDOWS_CERT_PASSWORD }}
+        shell: pwsh
+        run: |
+          $certBytes = [Convert]::FromBase64String($env:WINDOWS_CERT_BASE64)
+          $certPath = Join-Path $env:RUNNER_TEMP "codesign-installer.pfx"
+          [IO.File]::WriteAllBytes($certPath, $certBytes)
+          $signtool = (Get-ChildItem -Path "C:\Program Files (x86)\Windows Kits" -Recurse -Filter "signtool.exe" | Where-Object { $_.FullName -like "*x64*" } | Select-Object -First 1).FullName
+          & $signtool sign /f $certPath /p $env:WINDOWS_CERT_PASSWORD /tr http://timestamp.digicert.com /td SHA256 /fd SHA256 "upload\EleSync-Setup.exe"
+          Remove-Item $certPath -Force
+
+      # Uploading to a DRAFT is the only moment assets can be attached.
+      # No continue-on-error: a failed upload must fail the release.
+      - name: Record release dependency inventory and checksums
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip list --format=json > "upload/python-dependencies-${{ matrix.target }}.json"
+          ( cd upload && sha256sum * > SHA256SUMS )
+
+      - name: Attach executables to the draft release
+        shell: bash
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG: ${{ needs.draft.outputs.tag }}
+        run: |
+          set -euo pipefail
+          gh release upload "$TAG" "upload/${{ matrix.cli_asset }}" \
+            --repo "$GITHUB_REPOSITORY" --clobber
+          gh release upload "$TAG" "upload/python-dependencies-${{ matrix.target }}.json" \
+            "upload/SHA256SUMS" --repo "$GITHUB_REPOSITORY" --clobber
+          if [ -n "${{ matrix.gui_asset }}" ]; then
+            gh release upload "$TAG" "upload/${{ matrix.gui_asset }}" \
+              --repo "$GITHUB_REPOSITORY" --clobber
+          fi
+          if [ -n "${{ matrix.installer_asset }}" ]; then
+            gh release upload "$TAG" "upload/${{ matrix.installer_asset }}" \
+              --repo "$GITHUB_REPOSITORY" --clobber
+          fi
+
+  # ---- 3. verify every required release asset, then PUBLISH ----------------
+  publish:
+    needs: [draft, build]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Assert all required release assets are attached
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG: ${{ needs.draft.outputs.tag }}
+        run: |
+          set -euo pipefail
+          gh release view "$TAG" --repo "$GITHUB_REPOSITORY" --json assets \
+            --jq '.assets[].name' | tee names.txt
+          missing=0
+          for a in ele-windows.zip EleSync-windows.zip EleSync-Setup.exe; do
+            if grep -qx "$a" names.txt; then
+              echo "  OK   $a"
+            else
+              echo "::error::MISSING asset '$a'. Refusing to publish."
+              missing=1
+            fi
+          done
+          exit $missing
+
+      # Publishing freezes the release. Assets are already in place, so this is
+      # now safe — and the release becomes immutable WITH its binaries.
+      - name: Publish the draft
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG: ${{ needs.draft.outputs.tag }}
+        run: |
+          set -euo pipefail
+          gh release edit "$TAG" --repo "$GITHUB_REPOSITORY" --draft=false --latest
+          echo "::notice::Published $TAG with all assets attached"
