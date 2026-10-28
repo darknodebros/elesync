@@ -19,7 +19,7 @@ def smoke(binary: Path) -> None:
         with socket.socket() as probe:
             probe.bind(("127.0.0.1", 0))
             port = probe.getsockname()[1]
-        environment = {**os.environ, "HOME": str(root), "XDG_CONFIG_HOME": str(root / "config")}
+        environment = {**os.environ, "APPDATA": str(root / "config")}
         with (root / "process.log").open("w+") as log:
             process = subprocess.Popen(
                 [

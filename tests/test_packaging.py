@@ -8,6 +8,7 @@ These run in the base CI job: stdlib only, Python 3.11 compatible
 from __future__ import annotations
 
 import importlib.util
+import json
 import re
 import tempfile
 import unittest
@@ -75,6 +76,10 @@ class TestVersionSurfacesAgree(unittest.TestCase):
         m = re.search(r"EleSync is at \*\*([^*]+)\*\*", text)
         self.assertIsNotNone(m, "README status version not found")
         self.assertEqual(m.group(1), _pyproject_version())
+        manifest = json.loads((ROOT / "server.json").read_text(encoding="utf-8"))
+        self.assertEqual(manifest["version"], _pyproject_version())
+        self.assertEqual(manifest["packages"][0]["version"], _pyproject_version())
+        self.assertIn(f"mcp-name: {manifest['name']}", text)
 
     def test_init_version_matches_pyproject(self):
         text = (ROOT / "elesync" / "__init__.py").read_text(encoding="utf-8")
