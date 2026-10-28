@@ -131,4 +131,4 @@ htmlcov/
 !/scripts/
 !/templates/
 !/tests/
-!/vercel.json
+!/server.json

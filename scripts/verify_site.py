@@ -1,9 +1,8 @@
-"""Fail deployment if the public HTML or configured security headers drift."""
+"""Fail deployment if the public HTML or GitHub Pages content type drift."""
 
 from __future__ import annotations
 
 import argparse
-import json
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -19,11 +18,8 @@ def verify(body: bytes, raw_headers: str) -> None:
         elif ":" in line:
             name, value = line.split(":", 1)
             headers[name.lower()] = value.strip()
-    config = json.loads((ROOT / "vercel.json").read_text())
-    for expected in config["headers"][0]["headers"]:
-        name, value = expected["key"].lower(), expected["value"]
-        if headers.get(name) != value:
-            raise ValueError(f"Missing or unexpected deployed header: {name}")
+    if not headers.get("content-type", "").lower().startswith("text/html"):
+        raise ValueError("Missing or unexpected deployed header: content-type")
 
 
 def main() -> None:
@@ -32,7 +28,7 @@ def main() -> None:
     parser.add_argument("--headers", type=Path, required=True)
     args = parser.parse_args()
     verify(args.body.read_bytes(), args.headers.read_text())
-    print("Site HTML and security headers match this source commit.")
+    print("Site HTML and content type match this source commit.")
 
 
 if __name__ == "__main__":

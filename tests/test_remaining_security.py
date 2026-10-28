@@ -156,10 +156,7 @@ class TestSiteVerification(unittest.TestCase):
         self.module = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(self.module)
         self.body = (root / "index.html").read_bytes()
-        headers = json.loads((root / "vercel.json").read_text())["headers"][0]["headers"]
-        self.headers = "HTTP/2 200\n" + "\n".join(
-            item["key"] + ": " + item["value"] for item in headers
-        )
+        self.headers = "HTTP/2 200\nContent-Type: text/html; charset=utf-8\n"
 
     def test_site_must_match_both_source_and_headers(self):
         self.module.verify(self.body, self.headers)

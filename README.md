@@ -1,5 +1,7 @@
 # EleSync
 
+<!-- mcp-name: io.github.darknodebros/elesync -->
+
 ## Your private AI workspace
 
 EleSync gives you a private workspace that your AI tools can share.
@@ -84,13 +86,26 @@ The product workflow is:
 
 ## Install
 
-Install EleSync from the source repository. Public package registry distribution is
-not currently available.
+Install EleSync from PyPI or use the standalone Windows and Linux downloads.
+
+### Python / pip
+
+Requires Python 3.11 or newer. Once the release is published to PyPI:
+
+```bash
+python -m pip install --upgrade elesync
+ele web
+```
+
+Use a virtual environment or `pipx install elesync` on systems with externally managed Python.
+For a local MCP client, the installed `elesync` command starts the stdio server.
+With uv, use `uvx --from elesync elesync`. The MCP Registry name is
+`io.github.darknodebros/elesync`.
 
 ### Windows: easiest path
 
 When a Windows installer is available, download `EleSync-Setup.exe` from the
-[releases page](https://github.com/darknodebros/EleSync/releases), run it, and open EleSync.
+[releases page](https://github.com/darknodebros/elesync/releases), run it, and open EleSync.
 
 The installer is not code-signed yet, so Windows SmartScreen may say "Windows protected
 your PC". Choose **More info**, then **Run anyway**.
@@ -106,11 +121,36 @@ Claude Desktop is the optional local connection that can be pre-wired during ins
 Remote assistants require your authorization and a secure HTTPS connection, so the installer
 does not silently configure them.
 
+### Linux x86-64
+
+Download `EleSync-linux` from the [latest release](https://github.com/darknodebros/elesync/releases/latest).
+It is a standalone executable for Linux x86-64 with glibc 2.35 or newer (Ubuntu 22.04+, including compatible distributions).
+No Python installation is required. ARM64 and musl-based distributions such as Alpine are not supported by this binary.
+
+```bash
+chmod +x EleSync-linux
+./EleSync-linux
+```
+
+The launcher opens the local dashboard in your browser. For terminal use, download `ele-linux`:
+
+```bash
+chmod +x ele-linux
+./ele-linux --version
+./ele-linux web
+```
+
+Verify downloads against the release's `SHA256SUMS` before running them. For example, in a folder containing both Linux executables and `SHA256SUMS`:
+
+```bash
+grep -E '  (ele-linux|EleSync-linux)$' SHA256SUMS | sha256sum --check
+```
+
 ### Standalone builds
 
 Standalone Windows builds (the installer plus portable zips of the app and the `ele` command)
 are attached to each release in the
-[repository](https://github.com/darknodebros/EleSync/releases), when available.
+[repository](https://github.com/darknodebros/elesync/releases), when available.
 
 ### From source (Python)
 
@@ -118,7 +158,7 @@ For macOS, Linux, or users who prefer Python tooling, install from a clone of th
 repository:
 
 ```bash
-git clone https://github.com/darknodebros/EleSync.git
+git clone https://github.com/darknodebros/elesync.git
 cd EleSync
 pipx install .
 ele web
@@ -257,7 +297,7 @@ Common fixes:
 
 ## Project status
 
-EleSync is at **1.24.79** (1167 tests, ~12,500 LOC). The current product focus is stabilization:
+EleSync is at **1.24.80** (1167 tests, ~12,500 LOC). The current product focus is stabilization:
 bug fixing, UX polish, documentation, first-run completion, privacy clarity, and reliability.
 
 ## License

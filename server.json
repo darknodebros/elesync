@@ -1,0 +1,29 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.darknodebros/elesync",
+  "description": "Local-first AI workspace for shared context, knowledge, tasks, and memories",
+  "version": "1.24.80",
+  "repository": {
+    "url": "https://github.com/darknodebros/elesync",
+    "source": "github"
+  },
+  "websiteUrl": "https://elesync.dev",
+  "packages": [
+    {
+      "registryType": "pypi",
+      "identifier": "elesync",
+      "version": "1.24.80",
+      "transport": {
+        "type": "stdio"
+      },
+      "runtimeHint": "uvx",
+      "environmentVariables": [
+        {
+          "name": "ELESYNC_DIR",
+          "description": "Vault directory (default: ~/EleSyncVault)",
+          "isRequired": false
+        }
+      ]
+    }
+  ]
+}

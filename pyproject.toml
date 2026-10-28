@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "elesync"
-version = "1.24.79"
+version = "1.24.80"
 description = "Local-first AI project workspace — a private vault where approved assistants share context, knowledge, and tasks."
 readme = "README.md"
 license = { text = "Proprietary" }
@@ -53,9 +53,9 @@ ele = "elesync.cli:main"
 elesync = "elesync.mcp_server:main"
 
 [project.urls]
-Homepage = "https://github.com/darknodebros/EleSync"
-Repository = "https://github.com/darknodebros/EleSync"
-Issues = "https://github.com/darknodebros/EleSync/issues"
+Homepage = "https://github.com/darknodebros/elesync"
+Repository = "https://github.com/darknodebros/elesync"
+Issues = "https://github.com/darknodebros/elesync/issues"
 
 [tool.setuptools]
 packages = ["elesync", "elesync.commands"]

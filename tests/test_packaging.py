@@ -76,6 +76,10 @@ class TestVersionSurfacesAgree(unittest.TestCase):
         m = re.search(r"EleSync is at \*\*([^*]+)\*\*", text)
         self.assertIsNotNone(m, "README status version not found")
         self.assertEqual(m.group(1), _pyproject_version())
+        manifest = json.loads((ROOT / "server.json").read_text(encoding="utf-8"))
+        self.assertEqual(manifest["version"], _pyproject_version())
+        self.assertEqual(manifest["packages"][0]["version"], _pyproject_version())
+        self.assertIn(f"mcp-name: {manifest['name']}", text)
 
     def test_init_version_matches_pyproject(self):
         text = (ROOT / "elesync" / "__init__.py").read_text(encoding="utf-8")
@@ -255,9 +259,7 @@ class TestLandingPagePrivacy(unittest.TestCase):
     def test_page_and_deployments_expose_no_external_content(self):
         self.assertNotRegex(self.html, r"\b(?:href|src)=")
         self.assertNotIn("<script", self.html.lower())
-        vercel = json.loads((ROOT / "vercel.json").read_text(encoding="utf-8"))
-        self.assertEqual(vercel["outputDirectory"], "_site")
-        self.assertIn("cp index.html CNAME _site/", vercel["buildCommand"])
+        self.assertFalse((ROOT / "vercel.json").exists())
         pages = (ROOT / ".github" / "workflows" / "pages.yml").read_text(encoding="utf-8")
         self.assertIn("cp index.html _site/", pages)
         self.assertIn("cp CNAME _site/", pages)

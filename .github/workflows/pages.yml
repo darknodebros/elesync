@@ -1,8 +1,9 @@
 name: Deploy GitHub Pages
 
 on:
-  # Production is hosted on Vercel. Keep Pages available only for an
-  # intentional manual deployment after enabling it in repository settings.
+  push:
+    branches: [master]
+    paths: [index.html, CNAME, .github/workflows/pages.yml, scripts/verify_site.py]
   workflow_dispatch:
 
 # Allow only one concurrent deployment; don't cancel in-progress runs.
@@ -18,9 +19,13 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
+      pages: read
     steps:
       - name: Checkout
         uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+
+      - name: Configure GitHub Pages
+        uses: actions/configure-pages@983d7736d9b0ae728b81ab479565c72886d7745b # v5
 
       - name: Stage only the actual public site (not the whole repo)
         run: |
@@ -51,9 +56,20 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     permissions:
+      contents: read
       pages: write
       id-token: write
     steps:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@368f82528645a54fb793d4d04e342629a3f51346 # v5
+
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+
+      - name: Verify deployed page
+        env:
+          PAGE_URL: ${{ steps.deployment.outputs.page_url }}
+        run: |
+          set -euo pipefail
+          curl --fail --location --retry 5 --retry-delay 5 "$PAGE_URL" -D headers.txt -o deployed.html
+          python scripts/verify_site.py --body deployed.html --headers headers.txt
