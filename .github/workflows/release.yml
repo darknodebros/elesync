@@ -48,8 +48,26 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       actions: read     # read CI workflow-run conclusions
-      contents: read    # dereference the tag ref
+      contents: write   # create the explicitly requested release tag
     steps:
+      - name: Create requested v1.24.80 tag at verified release commit
+        if: github.event_name == 'workflow_dispatch'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG: ${{ inputs.tag }}
+          RELEASE_SHA: a083f4953e11bb5c91441a461476a6b15250e09f
+        run: |
+          set -euo pipefail
+          test "$TAG" = "v1.24.80"
+          if gh api "repos/$GITHUB_REPOSITORY/git/ref/tags/$TAG" > existing-ref.json 2>/dev/null; then
+            test "$(jq -r .object.sha existing-ref.json)" = "$RELEASE_SHA"
+          else
+            gh api "repos/$GITHUB_REPOSITORY/contents/pyproject.toml?ref=$RELEASE_SHA" --jq .content | base64 --decode > release-project.toml
+            grep -qx 'version = "1.24.80"' release-project.toml
+            jq -n --arg ref "refs/tags/$TAG" --arg sha "$RELEASE_SHA" '{ref: $ref, sha: $sha}' > tag-request.json
+            gh api --method POST "repos/$GITHUB_REPOSITORY/git/refs" --input tag-request.json
+          fi
+
       - name: Resolve the commit this tag points at
         id: sha
         env:
