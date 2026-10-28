@@ -159,16 +159,17 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        # Windows only while EleSync is tested on Windows alone. The steps below
-        # still handle linux and macos: to ship those again, restore their
-        # entries (ele-linux; ele-macos + EleSync-macos.zip) and add their
-        # assets to the publish check.
         include:
           - os: windows-latest
             target: windows
             cli_asset: ele-windows.zip
             gui_asset: EleSync-windows.zip
             installer_asset: EleSync-Setup.exe
+          - os: ubuntu-22.04
+            target: linux
+            cli_asset: ele-linux
+            gui_asset: EleSync-linux
+            installer_asset: ""
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
@@ -185,10 +186,15 @@ jobs:
           version: "0.12.23"
 
       - name: Install locked release dependencies
+        shell: bash
         run: |
+          set -euo pipefail
           uv sync --locked --group release --python 3.12
-          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-          "$env:GITHUB_WORKSPACE\.venv\Scripts" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+          if [ "$RUNNER_OS" = "Windows" ]; then
+            echo "$GITHUB_WORKSPACE/.venv/Scripts" >> "$GITHUB_PATH"
+          else
+            echo "$GITHUB_WORKSPACE/.venv/bin" >> "$GITHUB_PATH"
+          fi
 
       # Audit the actual locked release environment as well as CI.
       - name: Audit release dependencies
@@ -292,6 +298,14 @@ jobs:
             "$cli_built" --version
             cp "$cli_built" "upload/${{ matrix.cli_asset }}"
 
+            if [ "${{ matrix.target }}" = "linux" ]; then
+              gui_built="dist/EleSync-linux/EleSync"
+              test -x "$gui_built"
+              "$gui_built" --version
+              cp "$gui_built" "upload/${{ matrix.gui_asset }}"
+              python scripts/smoke_linux_release.py "$cli_built" "$gui_built"
+            fi
+
             if [ "${{ matrix.target }}" = "macos" ]; then
               gui_built="dist/EleSync-macos/EleSync.app"
               test -d "$gui_built" || { echo "::error::build.py produced no .app bundle at $gui_built"; exit 1; }
@@ -333,7 +347,7 @@ jobs:
         run: |
           set -euo pipefail
           python -m pip list --format=json > "upload/python-dependencies-${{ matrix.target }}.json"
-          ( cd upload && sha256sum * > SHA256SUMS )
+          ( cd upload && sha256sum * > "SHA256SUMS-${{ matrix.target }}" )
 
       - name: Attach executables to the draft release
         shell: bash
@@ -345,7 +359,7 @@ jobs:
           gh release upload "$TAG" "upload/${{ matrix.cli_asset }}" \
             --repo "$GITHUB_REPOSITORY" --clobber
           gh release upload "$TAG" "upload/python-dependencies-${{ matrix.target }}.json" \
-            "upload/SHA256SUMS" --repo "$GITHUB_REPOSITORY" --clobber
+            "upload/SHA256SUMS-${{ matrix.target }}" --repo "$GITHUB_REPOSITORY" --clobber
           if [ -n "${{ matrix.gui_asset }}" ]; then
             gh release upload "$TAG" "upload/${{ matrix.gui_asset }}" \
               --repo "$GITHUB_REPOSITORY" --clobber
@@ -355,9 +369,38 @@ jobs:
               --repo "$GITHUB_REPOSITORY" --clobber
           fi
 
+  python-package:
+    needs: draft
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+        with:
+          ref: ${{ needs.draft.outputs.tag }}
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1
+        with:
+          python-version: "3.12"
+      - uses: astral-sh/setup-uv@37802adc94f370d6bfd71619e3f0bf239e1f3b78
+        with:
+          version: "0.12.23"
+      - name: Build and validate Python distributions
+        run: |
+          set -euo pipefail
+          uv sync --locked --group ci --python 3.12
+          uv run --no-sync python -m build --no-isolation
+          uv run --no-sync twine check dist/*
+      - name: Attach Python distributions to draft
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG: ${{ needs.draft.outputs.tag }}
+        run: |
+          set -euo pipefail
+          gh release upload "$TAG" dist/*.whl dist/*.tar.gz --repo "$GITHUB_REPOSITORY" --clobber
+          (cd dist && sha256sum *.whl *.tar.gz) > SHA256SUMS-python
+          gh release upload "$TAG" SHA256SUMS-python --repo "$GITHUB_REPOSITORY" --clobber
+
   # ---- 3. verify every required release asset, then PUBLISH ----------------
   publish:
-    needs: [draft, build]
+    needs: [draft, build, python-package]
     runs-on: ubuntu-latest
     steps:
       - name: Assert all required release assets are attached
@@ -369,7 +412,7 @@ jobs:
           gh release view "$TAG" --repo "$GITHUB_REPOSITORY" --json assets \
             --jq '.assets[].name' | tee names.txt
           missing=0
-          for a in ele-windows.zip EleSync-windows.zip EleSync-Setup.exe; do
+          for a in ele-windows.zip EleSync-windows.zip EleSync-Setup.exe ele-linux EleSync-linux python-dependencies-windows.json python-dependencies-linux.json SHA256SUMS-windows SHA256SUMS-linux SHA256SUMS-python; do
             if grep -qx "$a" names.txt; then
               echo "  OK   $a"
             else
@@ -377,7 +420,22 @@ jobs:
               missing=1
             fi
           done
+          version="${TAG#v}"
+          for a in "elesync-${version}-py3-none-any.whl" "elesync-${version}.tar.gz"; do
+            grep -qx "$a" names.txt || { echo "::error::Missing Python package $a"; missing=1; }
+          done
           exit $missing
+
+      - name: Combine platform checksums
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG: ${{ needs.draft.outputs.tag }}
+        run: |
+          set -euo pipefail
+          mkdir checksums
+          gh release download "$TAG" --repo "$GITHUB_REPOSITORY" --pattern 'SHA256SUMS-*' --dir checksums
+          cat checksums/SHA256SUMS-* > SHA256SUMS
+          gh release upload "$TAG" SHA256SUMS --repo "$GITHUB_REPOSITORY" --clobber
 
       # Publishing freezes the release. Assets are already in place, so this is
       # now safe — and the release becomes immutable WITH its binaries.
@@ -389,3 +447,56 @@ jobs:
           set -euo pipefail
           gh release edit "$TAG" --repo "$GITHUB_REPOSITORY" --draft=false --latest
           echo "::notice::Published $TAG with all assets attached"
+
+  pypi:
+    needs: [draft, publish]
+    runs-on: ubuntu-latest
+    environment: pypi
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - name: Retrieve exact published Python distributions
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG: ${{ needs.draft.outputs.tag }}
+        run: |
+          set -euo pipefail
+          mkdir dist
+          gh release download "$TAG" --repo "$GITHUB_REPOSITORY" --pattern '*.whl' --pattern '*.tar.gz' --dir dist
+          gh release download "$TAG" --repo "$GITHUB_REPOSITORY" --pattern SHA256SUMS-python --dir dist
+          (cd dist && sha256sum --check SHA256SUMS-python && rm SHA256SUMS-python)
+      - name: Publish to PyPI with Trusted Publishing
+        uses: pypa/gh-action-pypi-publish@7245906fb61fa33a13554f9d5fb856fe61758086 # release/v1
+
+  mcp-registry:
+    needs: [draft, pypi]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+        with:
+          ref: ${{ needs.draft.outputs.tag }}
+      - name: Install verified MCP publisher
+        run: |
+          set -euo pipefail
+          curl --fail --location --retry 3 -o publisher.tar.gz https://github.com/modelcontextprotocol/registry/releases/download/v1.8.6/mcp-publisher_linux_amd64.tar.gz
+          echo '1fbe93fc0783c2394d8012c8d6e50a59e98cb2cc2d216264cc69f405d0e21340  publisher.tar.gz' | sha256sum --check
+          tar xzf publisher.tar.gz mcp-publisher
+      - name: Wait for PyPI visibility and validate package identity
+        env:
+          VERSION: ${{ needs.draft.outputs.version }}
+        run: |
+          set -euo pipefail
+          test "$(jq -r .version server.json)" = "$VERSION"
+          test "$(jq -r '.packages[0].version' server.json)" = "$VERSION"
+          curl --fail --retry 12 --retry-all-errors --retry-delay 10 "https://pypi.org/pypi/elesync/$VERSION/json" -o pypi.json
+          jq -e '.info.description | contains("mcp-name: io.github.darknodebros/elesync")' pypi.json
+          ./mcp-publisher validate
+      - name: Authenticate and publish MCP server
+        run: |
+          set -euo pipefail
+          ./mcp-publisher login github-oidc
+          ./mcp-publisher publish

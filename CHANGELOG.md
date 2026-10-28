@@ -4,6 +4,13 @@ All notable changes to EleSync are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/), and versions follow
 [Semantic Versioning](https://semver.org/).
 
+## [1.24.80] - 2026-10-28
+
+### Added
+- Restore GitHub Pages hosting, PyPI publishing, and the MCP Registry manifest and publishing pipeline.
+- Public Linux x86-64 standalone dashboard launcher (`EleSync-linux`) and CLI (`ele-linux`), built on Ubuntu 22.04 and smoke-tested with the bundled dashboard assets.
+- Platform dependency inventories and checksums, with a combined `SHA256SUMS` file.
+
 ## [Unreleased]
 
 ## [1.24.79] - 2026-10-27

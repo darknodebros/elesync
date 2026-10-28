@@ -179,7 +179,7 @@ jobs:
           scripts
           templates
           tests
-          vercel.json
+          server.json
           EOF
           )
           stray=0

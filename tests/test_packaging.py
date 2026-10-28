@@ -8,7 +8,6 @@ These run in the base CI job: stdlib only, Python 3.11 compatible
 from __future__ import annotations
 
 import importlib.util
-import json
 import re
 import tempfile
 import unittest
@@ -255,9 +254,7 @@ class TestLandingPagePrivacy(unittest.TestCase):
     def test_page_and_deployments_expose_no_external_content(self):
         self.assertNotRegex(self.html, r"\b(?:href|src)=")
         self.assertNotIn("<script", self.html.lower())
-        vercel = json.loads((ROOT / "vercel.json").read_text(encoding="utf-8"))
-        self.assertEqual(vercel["outputDirectory"], "_site")
-        self.assertIn("cp index.html CNAME _site/", vercel["buildCommand"])
+        self.assertFalse((ROOT / "vercel.json").exists())
         pages = (ROOT / ".github" / "workflows" / "pages.yml").read_text(encoding="utf-8")
         self.assertIn("cp index.html _site/", pages)
         self.assertIn("cp CNAME _site/", pages)
