@@ -38,7 +38,6 @@ updates:
           - "version-update:semver-major"
     # Labels for PR organization
     labels:
-      - "dependencies"
       - "python"
 
   # GitHub Actions workflows
@@ -56,6 +55,3 @@ updates:
         update-types:
           - "minor"
           - "patch"
-    labels:
-      - "dependencies"
-      - "github-actions"
