@@ -45,8 +45,8 @@ semantic = ["fastembed>=0.7.0,<0.10.0", "pillow>=13.0.0"]
 dev = ["pytest>=9.1.1", "httpx2>=2.8.0", "ruff==0.17.4", "mypy==2.4.1", "pre-commit==4.7.0"]
 
 [dependency-groups]
-ci = ["build", "twine", "wheel", "pip-audit==2.10.1", "pip==26.2.2", "setuptools"]
-release = ["pyinstaller", "pip-audit==2.10.1", "pip==26.2.2", "setuptools"]
+ci = ["build", "twine", "wheel", "pip==26.3", "pip==26.3", "setuptools"]
+release = ["pyinstaller", "pip-audit==2.10.1", "pip==26.3", "setuptools"]
 
 [project.scripts]
 ele = "elesync.cli:main"
