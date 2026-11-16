@@ -278,7 +278,7 @@ class TestLandingPagePrivacy(unittest.TestCase):
 
     def test_page_keeps_only_product_description(self):
         self.assertIn("private AI workspace", self.html)
-        self.assertIn("local-first product", self.html)
+        self.assertIn("local-first AI workspace", self.html)
         self.assertEqual(self.html.count("<main>"), 1)
 
 
